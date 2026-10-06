@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forms / Demo</title>
+<style>
+/* ─── Reset & Base ─────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+     background:#f0f4f8;color:#1a202c;font-size:13px;line-height:1.5}
+
+/* ─── Header ────────────────────────────────── */
+.header{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);
+        color:#f8fafc;padding:22px 32px;
+        display:flex;align-items:center;justify-content:space-between}
+.header-left h1{font-size:1.15rem;font-weight:700;margin-bottom:2px}
+.header-left .sub{font-size:.75rem;color:#94a3b8}
+.header-right{text-align:right}
+.big-rate{font-size:2.4rem;font-weight:800;line-height:1}
+.big-rate-lbl{font-size:.72rem;color:#94a3b8;margin-top:2px}
+
+/* ─── Summary Cards ─────────────────────────── */
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;
+       padding:20px 32px}
+.card{background:#fff;border-radius:10px;padding:16px 14px;text-align:center;
+      box-shadow:0 1px 4px rgba(0,0,0,.07);border-top:3px solid transparent}
+.card .val{font-size:1.9rem;font-weight:800;line-height:1;margin-bottom:4px}
+.card .lbl{font-size:.68rem;font-weight:600;text-transform:uppercase;
+           letter-spacing:.6px;color:#64748b}
+.c-scenarios{border-color:#6366f1}.c-scenarios .val{color:#6366f1}
+.c-passed   {border-color:#16a34a}.c-passed    .val{color:#16a34a}
+.c-failed   {border-color:#dc2626}.c-failed    .val{color:#dc2626}
+.c-skipped  {border-color:#f59e0b}.c-skipped   .val{color:#f59e0b}
+.c-rate     {border-color:#2563eb}.c-rate      .val{color:#2563eb}
+.c-duration {border-color:#7c3aed}.c-duration  .val{color:#7c3aed;font-size:1.4rem}
+
+/* ─── Progress Bar ──────────────────────────── */
+.progress-section{padding:0 32px 18px}
+.progress-bar{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;border-radius:999px;transition:width .6s ease}
+.progress-label{font-size:.72rem;color:#64748b;margin-top:5px;
+                display:flex;justify-content:space-between}
+
+/* ─── Toolbar ───────────────────────────────── */
+.toolbar{padding:0 32px 16px;display:flex;align-items:center;
+         gap:8px;flex-wrap:wrap}
+.tbtn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;
+      font-size:.75rem;font-weight:600;transition:opacity .15s}
+.tbtn:hover{opacity:.85}
+.tbtn-expand {background:#3b82f6;color:#fff}
+.tbtn-collapse{background:#6b7280;color:#fff}
+.tbtn-print  {background:#16a34a;color:#fff;margin-left:auto}
+.filter-group{display:flex;gap:5px}
+.fbtn{padding:5px 12px;border-radius:6px;border:1px solid #e2e8f0;
+      background:#fff;cursor:pointer;font-size:.72rem;font-weight:500;
+      transition:all .15s}
+.fbtn.active{background:#1e293b;color:#fff;border-color:#1e293b}
+.fbtn:hover:not(.active){background:#f1f5f9}
+
+/* ─── Features ──────────────────────────────── */
+.features-wrap{padding:0 32px 40px}
+.feature{margin-bottom:14px;border-radius:10px;overflow:hidden;
+         box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ft-header{padding:13px 18px;cursor:pointer;display:flex;
+           align-items:center;gap:10px;user-select:none;
+           transition:background .15s}
+.feature-passed .ft-header{background:#f0fdf4;border-left:4px solid #16a34a}
+.feature-failed .ft-header{background:#fef2f2;border-left:4px solid #dc2626}
+.feature-skipped .ft-header{background:#fffbeb;border-left:4px solid #f59e0b}
+.feature-passed .ft-header:hover{background:#dcfce7}
+.feature-failed .ft-header:hover{background:#fee2e2}
+.ft-icon{width:22px;height:22px;border-radius:50%;display:flex;
+         align-items:center;justify-content:center;
+         font-size:.8rem;font-weight:700;flex-shrink:0}
+.ft-passed{background:#16a34a;color:#fff}
+.ft-failed{background:#dc2626;color:#fff}
+.ft-info{flex:1;min-width:0}
+.ft-name{font-weight:700;font-size:.9rem;display:block}
+.ft-tags{font-size:.68rem;color:#6366f1;margin-left:6px}
+.ft-file{font-size:.68rem;color:#94a3b8;display:block;margin-top:1px}
+.ft-arr{color:#94a3b8;font-size:.8rem;flex-shrink:0;transition:transform .2s}
+.ft-arr.open{transform:rotate(180deg)}
+.ft-body{background:#fff;display:none}
+.ft-body.open{display:block}
+
+/* ─── Scenarios ─────────────────────────────── */
+.scenario{border-bottom:1px solid #f8fafc}
+.scenario:last-child{border-bottom:none}
+.sc-header{padding:10px 20px;cursor:pointer;display:flex;
+           align-items:center;gap:10px;user-select:none;
+           transition:background .15s}
+.scenario-passed .sc-header:hover{background:#f8fafc}
+.scenario-failed .sc-header{background:#fffbfb}
+.scenario-failed .sc-header:hover{background:#fef2f2}
+.sc-icon{width:18px;height:18px;border-radius:50%;display:flex;
+         align-items:center;justify-content:center;
+         font-size:.7rem;font-weight:700;flex-shrink:0}
+.sc-passed{background:#16a34a;color:#fff}
+.sc-failed{background:#dc2626;color:#fff}
+.sc-name{flex:1;font-weight:600;font-size:.83rem}
+.sc-tags{font-size:.66rem;color:#6366f1;margin-left:4px}
+.sc-dur{font-size:.7rem;color:#94a3b8;white-space:nowrap}
+.sc-arr{color:#94a3b8;font-size:.72rem;flex-shrink:0;transition:transform .2s}
+.sc-arr.open{transform:rotate(180deg)}
+.sc-body{padding:6px 20px 10px;display:none}
+.sc-body.open{display:block}
+
+/* ─── Steps ─────────────────────────────────── */
+.step{display:flex;align-items:flex-start;gap:8px;
+      padding:4px 8px;border-radius:5px;margin:2px 0;font-size:.78rem}
+.step-passed {background:#f0fdf4}
+.step-failed {background:#fef2f2}
+.step-skipped{background:#fefce8}
+.step-kw{font-weight:700;color:#6366f1;min-width:48px;flex-shrink:0}
+.step-name{flex:1;color:#334155}
+.step-dur{font-size:.68rem;color:#94a3b8;white-space:nowrap;flex-shrink:0}
+.step-icon{font-size:.8rem;flex-shrink:0;
+           color:#16a34a;font-weight:700}
+.step-failed .step-icon{color:#dc2626}
+.step-skipped .step-icon{color:#94a3b8}
+
+/* ─── Error Box ─────────────────────────────── */
+.err-wrap{margin-top:5px;width:100%;grid-column:1/-1}
+.err-title{font-size:.7rem;font-weight:700;color:#dc2626;
+           margin-bottom:3px;padding-left:2px}
+.err-body{background:#1e293b;color:#fca5a5;
+          padding:10px 14px;border-radius:6px;
+          font-size:.7rem;overflow-x:auto;
+          white-space:pre-wrap;word-break:break-all;
+          border-left:3px solid #dc2626}
+
+/* ─── Failure screenshots ────────────────────── */
+.shot-box{margin:8px 0 12px;padding:10px 12px;border:1px dashed #fca5a5;background:#fff8f8;border-radius:8px}
+.shot-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#b91c1c;margin-bottom:8px}
+.shot-thumb{display:block;max-width:260px;max-height:180px;border-radius:6px;border:1px solid #fecaca;box-shadow:0 4px 12px rgba(0,0,0,.08);background:#fff}
+.shot-link{margin-top:8px;font-size:.72rem}
+.shot-link a{color:#2563eb;text-decoration:none}
+.shot-link a:hover{text-decoration:underline}
+
+/* ─── Print ─────────────────────────────────── */
+@media print{
+  .toolbar{display:none!important}
+  body{background:#fff}
+  .features-wrap{padding:0}
+  .feature{box-shadow:none;border:1px solid #e2e8f0;margin-bottom:8px}
+  .ft-body,.sc-body{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>&#129514; Forms / Demo</h1>
+    <div class="sub">Generated: 19 Sep 2026  03:26 PM</div>
+  </div>
+  <div class="header-right">
+    <div class="big-rate">33%</div>
+    <div class="big-rate-lbl">Pass Rate</div>
+  </div>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div class="cards">
+  <div class="card c-scenarios">
+    <div class="val">3</div>
+    <div class="lbl">Scenarios</div>
+  </div>
+  <div class="card c-passed">
+    <div class="val">1</div>
+    <div class="lbl">Passed</div>
+  </div>
+  <div class="card c-failed">
+    <div class="val">0</div>
+    <div class="lbl">Failed</div>
+  </div>
+  <div class="card c-skipped">
+    <div class="val">2</div>
+    <div class="lbl">Skipped Scenarios</div>
+  </div>
+  <div class="card c-rate">
+    <div class="val">33%</div>
+    <div class="lbl">Pass Rate</div>
+  </div>
+  <div class="card c-duration">
+    <div class="val">54.31s</div>
+    <div class="lbl">Duration</div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-section">
+  <div class="progress-bar">
+    <div class="progress-fill"
+         style="width:33%;background:#dc2626">
+    </div>
+  </div>
+  <div class="progress-label">
+    <span>1 of 3 scenarios passed</span>
+    <span>Total: 14 steps &nbsp;|&nbsp; Passed: 8 &nbsp;|&nbsp; Failed: 0 &nbsp;|&nbsp; Skipped: 6</span>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="tbtn tbtn-expand"   onclick="expandAll()">&#9660; Expand All</button>
+  <button class="tbtn tbtn-collapse" onclick="collapseAll()">&#9650; Collapse All</button>
+  <div class="filter-group">
+    <button class="fbtn active" onclick="filterFeatures('all',this)">All</button>
+    <button class="fbtn"        onclick="filterFeatures('passed',this)">&#10003; Passed</button>
+    <button class="fbtn"        onclick="filterFeatures('failed',this)">&#10007; Failed</button>
+  </div>
+  <button class="tbtn tbtn-print" onclick="window.print()">&#128424; Print / Export PDF</button>
+</div>
+
+<!-- FEATURES -->
+<div class="features-wrap" id="features-wrap">
+<div class="feature feature-passed"><div class="ft-header" onclick="togFt(this)"><span class="ft-icon ft-passed">&#10003;</span><div class="ft-info"><span class="ft-name">Login to Application</span><span class="ft-file">features/login.feature:1</span></div><span class="ft-arr">&#9660;</span></div><div class="ft-body"><div class="scenario scenario-passed"><div class="sc-header" onclick="togSc(this)"><span class="sc-icon sc-passed">&#10003;</span><span class="sc-name">Successful login and setup</span><span class="sc-tags">@always_login</span><span class="sc-dur">35.78s</span><span class="sc-arr">&#9660;</span></div><div class="sc-body"><div class="step step-passed"><span class="step-kw">Given</span><span class="step-name">I open the login page</span><span class="step-dur">4862ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">When</span><span class="step-name">I enter the tenantCode</span><span class="step-dur">2140ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">Then</span><span class="step-name">I click on the Continue button</span><span class="step-dur">4122ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">When</span><span class="step-name">I enter the username</span><span class="step-dur">10301ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">When</span><span class="step-name">I enter the password</span><span class="step-dur">4180ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">Then</span><span class="step-name">I click on the Sign In button</span><span class="step-dur">7151ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">Then</span><span class="step-name">I should see the dashboard page</span><span class="step-dur">3013ms</span><span class="step-icon">&#10003;</span></div><div class="step step-passed"><span class="step-kw">Then</span><span class="step-name">I expand all menus in the toolbar</span><span class="step-dur">14ms</span><span class="step-icon">&#10003;</span></div></div></div></div></div><div class="feature feature-skipped"><div class="ft-header" onclick="togFt(this)"><span class="ft-icon ft-skipped">&#10007;</span><div class="ft-info"><span class="ft-name">User Management</span><span class="ft-file">features/Forms/Demo.feature:1</span></div><span class="ft-arr">&#9660;</span></div><div class="ft-body"><div class="scenario scenario-skipped"><div class="sc-header" onclick="togSc(this)"><span class="sc-icon sc-skipped">&#8212;</span><span class="sc-name">Open User Management  page</span><span class="sc-dur">8.21s</span><span class="sc-arr">&#9660;</span></div><div class="sc-body"><div class="step step-error"><span class="step-kw">Then</span><span class="step-name">I click on &quot;User Management&quot; from the menu</span><span class="step-dur">8213ms</span><span class="step-icon">&#8212;</span></div><div class="step step-skipped"><span class="step-kw">Given</span><span class="step-name">I am on the &quot;User Management&quot; page</span><span class="step-dur">0ms</span><span class="step-icon">&#8212;</span></div></div></div><div class="scenario scenario-skipped"><div class="sc-header" onclick="togSc(this)"><span class="sc-icon sc-skipped">&#8212;</span><span class="sc-name">Search for a user by name</span><span class="sc-dur">10.31s</span><span class="sc-arr">&#9660;</span></div><div class="sc-body"><div class="step step-error"><span class="step-kw">Then</span><span class="step-name">I select &quot;InActive&quot; from the &quot;status&quot; dropdown</span><span class="step-dur">10315ms</span><span class="step-icon">&#8212;</span></div><div class="step step-skipped"><span class="step-kw">Then</span><span class="step-name">I wait for 3 seconds</span><span class="step-dur">0ms</span><span class="step-icon">&#8212;</span></div><div class="step step-skipped"><span class="step-kw">Then</span><span class="step-name">I click on the Clear button</span><span class="step-dur">0ms</span><span class="step-icon">&#8212;</span></div><div class="step step-skipped"><span class="step-kw">Then</span><span class="step-name">I select &quot;Active&quot; from the &quot;status&quot; dropdown</span><span class="step-dur">0ms</span><span class="step-icon">&#8212;</span></div></div></div></div></div>
+</div>
+
+<script>
+function togFt(el){
+  var body=el.nextElementSibling;
+  var arr=el.querySelector('.ft-arr');
+  body.classList.toggle('open');
+  arr.classList.toggle('open');
+}
+function togSc(el){
+  var body=el.nextElementSibling;
+  var arr=el.querySelector('.sc-arr');
+  body.classList.toggle('open');
+  arr.classList.toggle('open');
+}
+function expandAll(){
+  document.querySelectorAll('.ft-body,.sc-body').forEach(function(e){
+    e.classList.add('open');
+  });
+  document.querySelectorAll('.ft-arr,.sc-arr').forEach(function(e){
+    e.classList.add('open');
+  });
+}
+function collapseAll(){
+  document.querySelectorAll('.ft-body,.sc-body').forEach(function(e){
+    e.classList.remove('open');
+  });
+  document.querySelectorAll('.ft-arr,.sc-arr').forEach(function(e){
+    e.classList.remove('open');
+  });
+}
+function filterFeatures(type,btn){
+  document.querySelectorAll('.fbtn').forEach(function(b){
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  document.querySelectorAll('.feature').forEach(function(f){
+    if(type==='all'){
+      f.style.display='';
+    } else {
+      f.style.display=f.classList.contains('feature-'+type)?'':'none';
+    }
+  });
+}
+// Auto-expand failed scenarios on load
+window.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.scenario-failed').forEach(function(sc){
+    var body=sc.querySelector('.sc-body');
+    var arr=sc.querySelector('.sc-arr');
+    if(body){body.classList.add('open');}
+    if(arr){arr.classList.add('open');}
+    var ft=sc.closest('.feature');
+    if(ft){
+      var fb=ft.querySelector('.ft-body');
+      var fa=ft.querySelector('.ft-arr');
+      if(fb){fb.classList.add('open');}
+      if(fa){fa.classList.add('open');}
+    }
+  });
+});
+</script>
+
+</body>
+</html>

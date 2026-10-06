@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forms / Demo</title>
+<style>
+/* ─── RESET & THEME TOKENS ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-page: #f1f5f9;
+  --bg-surface: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-sub: #94a3b8;
+  --border-light: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --pass: #16a34a;
+  --pass-bg: #dcfce7;
+  --pass-border: #86efac;
+  --pass-text: #166534;
+  --fail: #dc2626;
+  --fail-bg: #fee2e2;
+  --fail-border: #fca5a5;
+  --fail-text: #991b1b;
+  --skip: #d97706;
+  --skip-bg: #fef3c7;
+  --skip-border: #fcd34d;
+  --skip-text: #92400e;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Menlo, Monaco, 'Courier New', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--text-main);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ─── APP HEADER ───────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #f8fafc;
+  padding: 24px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.app-header-left h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-header-left .meta {
+  font-size: 0.76rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+  display: flex;
+  gap: 16px;
+}
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header-kpi {
+  text-align: right;
+}
+.header-kpi .rate-val {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #f87171;
+}
+.header-kpi .rate-lbl {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 3px;
+}
+
+/* ─── TAB NAVIGATION ───────────────────────────────────────── */
+.nav-tabs {
+  background: #fff;
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 36px;
+  display: flex;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+.nav-tab {
+  padding: 12px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+.nav-tab:hover {
+  color: var(--primary);
+  background: #f8fafc;
+}
+.nav-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.nav-tab .tab-badge {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* ─── MAIN WRAPPER ─────────────────────────────────────────── */
+.main-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 36px;
+}
+
+/* ─── SUMMARY CARDS ────────────────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.summary-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.summary-card .val {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.summary-card .lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+.c-scenarios .val { color: #6366f1; }
+.c-passed .val    { color: var(--pass); }
+.c-failed .val    { color: var(--fail); }
+.c-skipped .val   { color: var(--skip); }
+.c-rate .val      { color: #2563eb; }
+.c-dur .val       { color: #7c3aed; font-size: 1.45rem; }
+
+/* ─── PROGRESS BAR SECTION ─────────────────────────────────── */
+.progress-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.progress-track {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: #dc2626;
+  width: 11%;
+  transition: width 0.6s ease;
+}
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ─── SCENARIO EXECUTION MONITOR (PRIMARY USER REQUEST) ───── */
+.section-panel {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.section-panel-header {
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title .badge-count {
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+/* Search & Filters */
+.monitor-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.search-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-input-box input {
+  padding: 6px 12px 6px 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  font-size: 0.75rem;
+  outline: none;
+  width: 220px;
+  transition: border-color 0.15s, width 0.15s;
+}
+.search-input-box input:focus {
+  border-color: var(--primary);
+  width: 280px;
+}
+.search-icon {
+  position: absolute;
+  left: 9px;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  pointer-events: none;
+}
+.filter-btn-group {
+  display: flex;
+  gap: 4px;
+}
+.f-pill {
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-light);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.f-pill:hover {
+  background: #f1f5f9;
+}
+.f-pill.active {
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
+}
+
+/* Monitor Cards Grid */
+.monitor-grid {
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+.mon-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+.mon-card.mon-passed { border-left: 4px solid var(--pass); }
+.mon-card.mon-failed { border-left: 4px solid var(--fail); background: #fffbfb; }
+.mon-card.mon-skipped { border-left: 4px solid var(--skip); }
+
+.mon-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mon-idx {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  font-family: var(--font-mono);
+}
+.mon-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mon-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+.mon-bar {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.mon-card.mon-passed .mon-bar-fill { background: var(--pass); height: 100%; }
+.mon-card.mon-failed .mon-bar-fill { background: var(--fail); height: 100%; }
+.mon-card.mon-skipped .mon-bar-fill { background: var(--skip); height: 100%; }
+
+/* ─── STATUS PILLS (MATCHING REFERENCE IMAGE) ──────────────── */
+.status-pill {
+  font-size: 0.70rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.badge-passed {
+  background: var(--pass-bg);
+  border: 1px solid var(--pass-border);
+  color: var(--pass-text);
+}
+.badge-failed {
+  background: var(--fail-bg);
+  border: 1px solid var(--fail-border);
+  color: var(--fail-text);
+}
+.badge-skipped {
+  background: var(--skip-bg);
+  border: 1px solid var(--skip-border);
+  color: var(--skip-text);
+}
+
+/* ─── CIRCULAR TOGGLE BUTTON (MATCHING REFERENCE IMAGE) ───── */
+.sc-circle-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  border: none;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.sc-circle-btn:hover {
+  background: #94a3b8;
+  color: #fff;
+}
+.sc-circle-btn.open {
+  transform: rotate(180deg);
+  background: #64748b;
+  color: #fff;
+}
+
+/* ─── FEATURES & SCENARIOS ─────────────────────────────────── */
+.feature-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.ft-header {
+  padding: 14px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s;
+}
+.ft-header:hover {
+  background: #f1f5f9;
+}
+.ft-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.ft-icon-passed { background: var(--pass); }
+.ft-icon-failed { background: var(--fail); }
+.ft-icon-skipped { background: var(--skip); }
+
+.ft-info {
+  flex: 1;
+  min-width: 0;
+}
+.ft-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ft-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.ft-tag {
+  font-size: 0.68rem;
+  color: #6366f1;
+  font-family: var(--font-mono);
+}
+.ft-path {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  display: block;
+  margin-top: 1px;
+}
+.ft-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ft-dur {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.ft-body {
+  display: block;
+  background: #fff;
+}
+.ft-body.collapsed {
+  display: none;
+}
+
+/* ─── SCENARIO CARD (EXACTLY MATCHING USER REFERENCE IMAGE) ── */
+.scenario-card {
+  border-bottom: 1px solid var(--border-light);
+  background: #fff;
+  transition: background 0.15s;
+}
+.scenario-card:last-child {
+  border-bottom: none;
+}
+.scenario-card.highlighted {
+  animation: pulse-border 1.5s ease-out;
+}
+@keyframes pulse-border {
+  0% { background: #eff6ff; }
+  100% { background: #fff; }
+}
+
+.sc-header {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  transition: background 0.15s;
+}
+.sc-header:hover {
+  background: #f8fafc;
+}
+.scenario-failed .sc-header {
+  background: #fffafa;
+}
+.scenario-failed .sc-header:hover {
+  background: #fef2f2;
+}
+
+.sc-doc-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.sc-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  flex: 1;
+}
+.sc-tag {
+  font-size: 0.68rem;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+.sc-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sc-dur {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.sc-body {
+  padding: 6px 20px 16px;
+  background: #fff;
+  display: block;
+}
+.sc-body.collapsed {
+  display: none;
+}
+
+/* ─── STEP ROW (MATCHING USER REFERENCE IMAGE) ─────────────── */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.step-row {
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: background 0.15s;
+}
+.step-row-passed { background: #f9fdfa; }
+.step-row-failed { background: #fff5f5; }
+.step-row-skipped { background: #fafaf9; opacity: 0.8; }
+
+.step-main-bar {
+  padding: 8px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.step-main-bar:hover {
+  filter: brightness(0.97);
+}
+.step-toggle-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: none;
+  color: #475569;
+  font-size: 0.55rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: transform 0.2s;
+}
+.step-toggle-btn.open {
+  transform: rotate(180deg);
+  background: #94a3b8;
+  color: #fff;
+}
+.step-toggle-spacer {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.step-status-icon {
+  font-size: 0.85rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.icon-passed { color: var(--pass); }
+.icon-failed { color: var(--fail); }
+.icon-skipped { color: var(--text-sub); }
+
+.step-content-box {
+  flex: 1;
+  min-width: 0;
+}
+.step-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.82rem;
+}
+.step-kw {
+  font-weight: 700;
+  color: #4f46e5;
+  flex-shrink: 0;
+}
+.step-name {
+  color: var(--text-main);
+  font-weight: 500;
+}
+.step-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.step-dur {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Strategy Pills (MATCHING USER REFERENCE IMAGE) */
+.step-strategies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.strategy-pill {
+  font-size: 0.69rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pill-loss {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+.pill-win {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+.pill-skipped {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+/* ─── ERROR PANEL ──────────────────────────────────────────── */
+.step-details-body {
+  padding: 0 12px 10px 40px;
+}
+.err-panel {
+  background: #0f172a;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--fail);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.err-header {
+  background: #1e293b;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.err-tag {
+  color: #f87171;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+.btn-copy-err {
+  background: #334155;
+  border: none;
+  color: #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-copy-err:hover {
+  background: var(--primary);
+  color: #fff;
+}
+.err-text {
+  padding: 10px 14px;
+  color: #fca5a5;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 260px;
+  overflow-y: auto;
+  line-height: 1.45;
+}
+
+/* ─── SCREENSHOT EVIDENCE CARD ─────────────────────────────── */
+.screenshot-card {
+  margin: 10px 0 14px;
+  padding: 12px;
+  background: #fff8f8;
+  border: 1px dashed #fca5a5;
+  border-radius: var(--radius-sm);
+}
+.shot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.shot-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--fail-text);
+  letter-spacing: 0.5px;
+}
+.shot-btn-link {
+  font-size: 0.72rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.shot-btn-link:hover { text-decoration: underline; }
+.shot-preview-wrap {
+  position: relative;
+  display: inline-block;
+  cursor: zoom-in;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid #fecaca;
+  box-shadow: var(--shadow-sm);
+}
+.shot-img {
+  display: block;
+  max-width: 260px;
+  max-height: 160px;
+  object-fit: cover;
+  background: #fff;
+}
+.shot-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.shot-preview-wrap:hover .shot-overlay {
+  opacity: 1;
+}
+
+/* ─── GUI TERMINAL CONSOLE VIEW ────────────────────────────── */
+.terminal-window {
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  border: 1px solid #334155;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.terminal-titlebar {
+  background: #1e293b;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #334155;
+  user-select: none;
+}
+.terminal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.term-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.term-dot.red    { background: #ef4444; }
+.term-dot.yellow { background: #f59e0b; }
+.term-dot.green  { background: #10b981; }
+.term-title {
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.term-actions {
+  display: flex;
+  gap: 8px;
+}
+.term-btn {
+  background: #334155;
+  border: 1px solid #475569;
+  color: #e2e8f0;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.term-btn:hover {
+  background: #475569;
+}
+.terminal-body {
+  padding: 18px 22px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #38bdf8;
+  line-height: 1.5;
+  white-space: pre;
+  overflow-x: auto;
+  max-height: 700px;
+  background: #020617;
+}
+
+/* ─── LIGHTBOX MODAL ───────────────────────────────────────── */
+.lightbox-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 24px;
+}
+.lightbox-modal.active {
+  display: flex;
+}
+.lightbox-img {
+  max-width: 95vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  background: #fff;
+}
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-close:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* ─── PRINT OPTIMIZATIONS ──────────────────────────────────── */
+@media print {
+  .app-header, .nav-tabs, .monitor-controls, .sc-circle-btn, .step-toggle-btn, .term-actions {
+    display: none !important;
+  }
+  body { background: #fff; color: #000; padding: 0; }
+  .main-wrap { padding: 0; max-width: 100%; }
+  .ft-body, .sc-body { display: block !important; }
+  .scenario-card, .feature-card { box-shadow: none !important; border: 1px solid #ccc !important; margin-bottom: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div class="app-header-left">
+    <h1>🧪 Forms / Demo</h1>
+    <div class="meta">
+      <span>📅 Generated: 28 Sep 2026  01:45 PM</span>
+      <span>⏱ Total Duration: 1m 9.3s</span>
+      <span>📦 Total Scenarios: 9</span>
+    </div>
+  </div>
+  <div class="app-header-right">
+    <div class="header-kpi">
+      <div class="rate-val">11%</div>
+      <div class="rate-lbl">Scenario Pass Rate</div>
+    </div>
+  </div>
+</header>
+
+<!-- TABS NAVIGATION -->
+<nav class="nav-tabs">
+  <div class="nav-tab active" id="tab-scenarios" onclick="switchView('scenarios')">
+    <span>📊 Scenarios &amp; Steps</span>
+    <span class="tab-badge">9</span>
+  </div>
+  <div class="nav-tab" id="tab-terminal" onclick="switchView('terminal')">
+    <span>💻 GUI Terminal Console</span>
+    <span class="tab-badge">LIVE LOG</span>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-wrap">
+
+  <!-- SCENARIOS VIEW -->
+  <div id="view-scenarios">
+
+    <!-- KPI CARDS -->
+    <div class="cards-grid">
+      <div class="summary-card c-scenarios">
+        <div class="val">9</div>
+        <div class="lbl">Total Scenarios</div>
+      </div>
+      <div class="summary-card c-passed">
+        <div class="val">1</div>
+        <div class="lbl">Passed</div>
+      </div>
+      <div class="summary-card c-failed">
+        <div class="val">8</div>
+        <div class="lbl">Failed</div>
+      </div>
+      <div class="summary-card c-skipped">
+        <div class="val">0</div>
+        <div class="lbl">Skipped</div>
+      </div>
+      <div class="summary-card c-rate">
+        <div class="val">11%</div>
+        <div class="lbl">Pass Rate</div>
+      </div>
+      <div class="summary-card c-dur">
+        <div class="val">1m 9.3s</div>
+        <div class="lbl">Total Duration</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-card">
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-labels">
+        <span><strong>1 of 9</strong> scenarios passed</span>
+        <span>Steps: <strong>60</strong> total &nbsp;|&nbsp; <strong style="color:var(--pass)">12 passed</strong> &nbsp;|&nbsp; <strong style="color:var(--fail)">8 failed</strong> &nbsp;|&nbsp; <strong style="color:var(--skip)">40 skipped</strong></span>
+      </div>
+    </div>
+
+    <!-- ── SCENARIO EXECUTION MONITOR SECTION (PRIMARY FEATURE) ── -->
+    <section class="section-panel">
+      <div class="section-panel-header">
+        <div class="section-title">
+          <span>🎯 Scenario Execution Monitor</span>
+          <span class="badge-count">9 total</span>
+        </div>
+        <div class="monitor-controls">
+          <div class="search-input-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="scenario-search" placeholder="Search scenarios, tags, steps..." oninput="handleSearch(this.value)" />
+          </div>
+          <div class="filter-btn-group">
+            <button class="f-pill active" onclick="filterByStatus('all', this)">All (9)</button>
+            <button class="f-pill" onclick="filterByStatus('passed', this)">✓ Passed (1)</button>
+            <button class="f-pill" onclick="filterByStatus('failed', this)">✗ Failed (8)</button>
+            <button class="f-pill" onclick="filterByStatus('skipped', this)">— Skipped (0)</button>
+          </div>
+        </div>
+      </div>
+      <div class="monitor-grid" id="monitor-grid">
+        
+        <div class="mon-card mon-passed" onclick="scrollToScenario('sc-1')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#1</span>
+            <span class="status-pill badge-passed">✓ PASSED</span>
+          </div>
+          <div class="mon-name">Successful login and setup</div>
+          <div class="mon-meta">
+            <span class="mon-steps">8/8 steps</span>
+            <span class="mon-dur">⏱ 26.74s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:100%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-2')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#2</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Open User Managemen page</div>
+          <div class="mon-meta">
+            <span class="mon-steps">0/2 steps</span>
+            <span class="mon-dur">⏱ 8.24s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-3')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#3</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Fill User information page</div>
+          <div class="mon-meta">
+            <span class="mon-steps">1/11 steps</span>
+            <span class="mon-dur">⏱ 21.20s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:9%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-4')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#4</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Fill Company &amp; setings in this page</div>
+          <div class="mon-meta">
+            <span class="mon-steps">1/12 steps</span>
+            <span class="mon-dur">⏱ 3.00s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:8%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-5')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#5</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Search for a user by name</div>
+          <div class="mon-meta">
+            <span class="mon-steps">0/3 steps</span>
+            <span class="mon-dur">⏱ 10ms</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-6')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#6</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Search for a user by name</div>
+          <div class="mon-meta">
+            <span class="mon-steps">0/8 steps</span>
+            <span class="mon-dur">⏱ 33ms</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-7')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#7</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Filter users by type EMPLOYEE</div>
+          <div class="mon-meta">
+            <span class="mon-steps">0/3 steps</span>
+            <span class="mon-dur">⏱ 28ms</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-8')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#8</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">View details of select user</div>
+          <div class="mon-meta">
+            <span class="mon-steps">1/6 steps</span>
+            <span class="mon-dur">⏱ 5.01s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:17%"></div>
+          </div>
+        </div>
+        
+        <div class="mon-card mon-failed" onclick="scrollToScenario('sc-9')" title="Click to view scenario details">
+          <div class="mon-card-header">
+            <span class="mon-idx">#9</span>
+            <span class="status-pill badge-failed">✗ FAILED</span>
+          </div>
+          <div class="mon-name">Edit details of select user</div>
+          <div class="mon-meta">
+            <span class="mon-steps">1/7 steps</span>
+            <span class="mon-dur">⏱ 5.01s</span>
+          </div>
+          <div class="mon-bar">
+            <div class="mon-bar-fill" style="width:14%"></div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- FEATURES & SCENARIOS DETAILS -->
+    <div id="features-wrap">
+      
+        <div class="feature-card feature-passed" id="feat-0">
+          <div class="ft-header" onclick="toggleFeature('feat-0')">
+            <span class="ft-icon ft-icon-passed">✓</span>
+            <div class="ft-info">
+              <div class="ft-title-row">
+                <span class="ft-name">Login to Application</span>
+                
+              </div>
+              <span class="ft-path">features/login.feature:1</span>
+            </div>
+            <div class="ft-right">
+              <span class="status-pill badge-passed">PASSED</span>
+              <span class="ft-dur">⏱ 26.74s</span>
+              <button class="sc-circle-btn ft-arr" id="feat-0-arr">▼</button>
+            </div>
+          </div>
+          <div class="ft-body" id="feat-0-body">
+            
+            <div class="scenario-card scenario-passed" id="sc-1">
+              <div class="sc-header" onclick="toggleScenario('sc-1')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Successful login and setup</span>
+                <span class="sc-tag">@always_login</span>
+                <div class="sc-right">
+                  <span class="status-pill badge-passed">PASSED</span>
+                  <span class="sc-dur">⏱ 26.74s</span>
+                  <button class="sc-circle-btn" id="sc-1-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-1-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Given</span>
+                        <span class="step-name">I open the login page</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 1.25s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">When</span>
+                        <span class="step-name">I enter the tenantCode</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-win">✓ P0 · data-testid</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 2.11s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Continue button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-win">✓ P0 · data-testid</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 2.12s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">When</span>
+                        <span class="step-name">I enter the username</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-win">✓ P0 · data-testid</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 10.32s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">When</span>
+                        <span class="step-name">I enter the password</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-win">✓ P0 · data-testid</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 4.15s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Sign In button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-win">✓ P0 · data-testid</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 4.68s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-6-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I should see the dashboard page</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 16ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-1-step-7-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I expand all menus in the toolbar</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 2.09s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <div class="feature-card feature-failed" id="feat-1">
+          <div class="ft-header" onclick="toggleFeature('feat-1')">
+            <span class="ft-icon ft-icon-failed">✗</span>
+            <div class="ft-info">
+              <div class="ft-title-row">
+                <span class="ft-name">User Managemen</span>
+                
+              </div>
+              <span class="ft-path">features/Forms/Demo.feature:1</span>
+            </div>
+            <div class="ft-right">
+              <span class="status-pill badge-failed">FAILED</span>
+              <span class="ft-dur">⏱ 42.54s</span>
+              <button class="sc-circle-btn ft-arr" id="feat-1-arr">▼</button>
+            </div>
+          </div>
+          <div class="ft-body" id="feat-1-body">
+            
+            <div class="scenario-card scenario-failed" id="sc-2">
+              <div class="sc-header" onclick="toggleScenario('sc-2')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Open User Managemen page</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 8.24s</span>
+                  <button class="sc-circle-btn" id="sc-2-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-2-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-2-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on &quot;User Management&quot; from the menu</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · data-testid</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID</span><span class="strategy-pill pill-loss">✗ P2 · Button Text</span><span class="strategy-pill pill-loss">✗ P3 · Mat Icon</span><span class="strategy-pill pill-loss">✗ P4 · aria-label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 8.24s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-2-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-3">
+              <div class="sc-header" onclick="toggleScenario('sc-3')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Fill User information page</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 21.20s</span>
+                  <button class="sc-circle-btn" id="sc-3-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-3-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Given</span>
+                        <span class="step-name">I am on the &quot;User Management&quot; page</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">When</span>
+                        <span class="step-name">I click on the Add button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · data-testid</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID</span><span class="strategy-pill pill-loss">✗ P2 · Button Text</span><span class="strategy-pill pill-loss">✗ P3 · Mat Icon</span><span class="strategy-pill pill-loss">✗ P4 · aria-label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 21.20s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">When</span>
+                        <span class="step-name">I type &quot;Test6&quot; in the input &quot;userName&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID / Name</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;john@gmail.com&quot; in the input &quot;email&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID / Name</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;6734566567&quot; in the input &quot;mobile&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID / Name</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;LOCAL&quot; from the &quot;loginType&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-6-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;Mohamed@&quot; in the input &quot;password&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID / Name</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-7-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 1 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-8-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Active&quot; from the &quot;userStatus&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-9-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Employee&quot; from the &quot;usertype&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-3-step-10-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Next button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-4">
+              <div class="sc-header" onclick="toggleScenario('sc-4')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Fill Company &amp; setings in this page</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 3.00s</span>
+                  <button class="sc-circle-btn" id="sc-4-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-4-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 3.00s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I check the checkbox with id &quot;chk_option_company_101&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · Prefixed ID</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID</span><span class="strategy-pill pill-loss">✗ P2 · aria-label</span><span class="strategy-pill pill-loss">✗ P3 · mat-label</span><span class="strategy-pill pill-loss">✗ P4 · placeholder</span><span class="strategy-pill pill-loss">✗ P5 · proximity scan</span><span class="strategy-pill pill-loss">✗ P6 · floating label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the &quot;default_company_101&quot; button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Main&quot; from the &quot;warehouse&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Asset&quot; from the &quot;cashledger&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-6-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I check the checkbox with id &quot;chk_option_app_1&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-7-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-8-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I check the checkbox with id &quot;chk_option_group_3&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-9-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-10-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I check the checkbox with id &quot;chk_option_group_1&quot;</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-4-step-11-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Save button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-5">
+              <div class="sc-header" onclick="toggleScenario('sc-5')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Search for a user by name</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 10ms</span>
+                  <button class="sc-circle-btn" id="sc-5-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-5-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-5-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;Test6&quot; in the search bar</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · data-testid</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID / Name</span><span class="strategy-pill pill-loss">✗ P2 · Placeholder</span><span class="strategy-pill pill-loss">✗ P3 · Label Match</span><span class="strategy-pill pill-loss">✗ P4 · mat-label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 10ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-5-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 1 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-5-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I clear the search bar</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-6">
+              <div class="sc-header" onclick="toggleScenario('sc-6')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Search for a user by name</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 33ms</span>
+                  <button class="sc-circle-btn" id="sc-6-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-6-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;All Statuses&quot; from the &quot;status&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · Prefixed ID</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID</span><span class="strategy-pill pill-loss">✗ P2 · aria-label</span><span class="strategy-pill pill-loss">✗ P3 · mat-label</span><span class="strategy-pill pill-loss">✗ P4 · placeholder</span><span class="strategy-pill pill-loss">✗ P5 · proximity scan</span><span class="strategy-pill pill-loss">✗ P6 · floating label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 33ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Clear button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Active&quot; from the &quot;status&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Clear button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;InActive&quot; from the &quot;status&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Clear button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-6-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Deleted&quot; from the &quot;status&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-6-step-7-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Clear button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-7">
+              <div class="sc-header" onclick="toggleScenario('sc-7')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Filter users by type EMPLOYEE</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 28ms</span>
+                  <button class="sc-circle-btn" id="sc-7-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-7-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-7-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Admin&quot; from the &quot;type&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · Prefixed ID</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID</span><span class="strategy-pill pill-loss">✗ P2 · aria-label</span><span class="strategy-pill pill-loss">✗ P3 · mat-label</span><span class="strategy-pill pill-loss">✗ P4 · placeholder</span><span class="strategy-pill pill-loss">✗ P5 · proximity scan</span><span class="strategy-pill pill-loss">✗ P6 · floating label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 28ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-7-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 3 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-7-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Clear button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-8">
+              <div class="sc-header" onclick="toggleScenario('sc-8')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">View details of select user</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 5.01s</span>
+                  <button class="sc-circle-btn" id="sc-8-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-8-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 5 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 5.00s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;Test6&quot; in the search bar</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · data-testid</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID / Name</span><span class="strategy-pill pill-loss">✗ P2 · Placeholder</span><span class="strategy-pill pill-loss">✗ P3 · Label Match</span><span class="strategy-pill pill-loss">✗ P4 · mat-label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 10ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the &quot;btn_actions_9&quot; button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the &quot;View Details&quot; button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 2 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-8-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the close button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="scenario-card scenario-failed" id="sc-9">
+              <div class="sc-header" onclick="toggleScenario('sc-9')">
+                <span class="sc-doc-icon">📝</span>
+                <span class="sc-title">Edit details of select user</span>
+                
+                <div class="sc-right">
+                  <span class="status-pill badge-failed">FAILED</span>
+                  <span class="sc-dur">⏱ 5.01s</span>
+                  <button class="sc-circle-btn" id="sc-9-arr">▲</button>
+                </div>
+              </div>
+              <div class="sc-body" id="sc-9-body">
+                
+                <div class="steps-container">
+                  
+                <div class="step-row step-row-passed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-0-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-passed">✓</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 5 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-passed">PASSED</span>
+                      <span class="step-dur">⏱ 5.00s</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-failed">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-1-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-failed">✗</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I type &quot;Test6&quot; in the search bar</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-loss">✗ P0 · data-testid</span><span class="strategy-pill pill-loss">✗ P1 · Exact ID / Name</span><span class="strategy-pill pill-loss">✗ P2 · Placeholder</span><span class="strategy-pill pill-loss">✗ P3 · Label Match</span><span class="strategy-pill pill-loss">✗ P4 · mat-label</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-failed">FAILED</span>
+                      <span class="step-dur">⏱ 12ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-2-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the &quot;btn_actions_9&quot; button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-3-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the &quot;Edit Details&quot; button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-4-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I select &quot;Inactive&quot; from the &quot;userStatus&quot; dropdown</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · Prefixed ID</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-5-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I wait for 2 seconds</span>
+                      </div>
+                      
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                <div class="step-row step-row-skipped">
+                  <div class="step-main-bar" onclick="toggleStepDetails('sc-9-step-6-det')">
+                    <span class="step-toggle-spacer"></span>
+                    <span class="step-status-icon icon-skipped">—</span>
+                    <div class="step-content-box">
+                      <div class="step-line">
+                        <span class="step-kw">Then</span>
+                        <span class="step-name">I click on the Save button</span>
+                      </div>
+                      <div class="step-strategies"><span class="strategy-pill pill-skipped">— P0 · data-testid</span><span class="strategy-pill pill-skipped">— P1 · Exact ID</span></div>
+                    </div>
+                    <div class="step-right">
+                      <span class="status-pill badge-skipped">SKIPPED</span>
+                      <span class="step-dur">⏱ 0ms</span>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+    </div>
+
+  </div>
+
+  <!-- GUI TERMINAL CONSOLE VIEW -->
+  <div id="view-terminal" style="display:none">
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <div class="terminal-controls">
+          <span class="term-dot red"></span>
+          <span class="term-dot yellow"></span>
+          <span class="term-dot green"></span>
+          <span class="term-title">Automatio BDD Terminal Console — Live Execution Output</span>
+        </div>
+        <div class="term-actions">
+          <button class="term-btn" onclick="copyTerminal()">📋 Copy Log</button>
+          <button class="term-btn" onclick="downloadLog()">⬇️ Download .log</button>
+          <button class="term-btn" onclick="toggleTermFullscreen()">⛶ Fullscreen</button>
+        </div>
+      </div>
+      <div class="terminal-body" id="term-text">╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                           AcSys ERP BDD AUTOMATION RUNNER — GUI TERMINAL                          ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Run Label  : Forms / Demo                                                                       ║
+║  Timestamp  : 28 Sep 2026  01:45 PM                                                              ║
+║  Overall    : 1/9 Scenarios Passed (11%) | Duration: 1m 9.3s                                      ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 SCENARIO EXECUTION MONITOR MATRIX                                 │
+├────┬───────────────────────────────────────────────────┬────────────┬─────────────┬───────────────┤
+│ #  │ SCENARIO NAME                                     │ STATUS     │ STEPS       │ DURATION      │
+├────┼───────────────────────────────────────────────────┼────────────┼─────────────┼───────────────┤
+│ 1  │ Successful login and setup                        │ PASSED     │ 8/8 pass    │ 26.74s        │
+│ 2  │ Open User Managemen page                          │ FAILED     │ 0/2 pass    │ 8.24s         │
+│ 3  │ Fill User information page                        │ FAILED     │ 1/11 pass   │ 21.20s        │
+│ 4  │ Fill Company &amp; setings in this page               │ FAILED     │ 1/12 pass   │ 3.00s         │
+│ 5  │ Search for a user by name                         │ FAILED     │ 0/3 pass    │ 10ms          │
+│ 6  │ Search for a user by name                         │ FAILED     │ 0/8 pass    │ 33ms          │
+│ 7  │ Filter users by type EMPLOYEE                     │ FAILED     │ 0/3 pass    │ 28ms          │
+│ 8  │ View details of select user                       │ FAILED     │ 1/6 pass    │ 5.01s         │
+│ 9  │ Edit details of select user                       │ FAILED     │ 1/7 pass    │ 5.01s         │
+└────┴───────────────────────────────────────────────────┴────────────┴─────────────┴───────────────┘
+
+▶ STEP EXECUTION TRACE:
+
+[FEATURE] Login to Application (features/login.feature:1)
+  ✔ SCENARIO: Successful login and setup [PASSED] - 26.74s
+      ✓ Given I open the login page (1.25s)
+      ✓ When  I enter the tenantCode (2.11s)
+      ✓ Then  I click on the Continue button (2.12s)
+      ✓ When  I enter the username (10.32s)
+      ✓ When  I enter the password (4.15s)
+      ✓ Then  I click on the Sign In button (4.68s)
+      ✓ Then  I should see the dashboard page (16ms)
+      ✓ Then  I expand all menus in the toolbar (2.09s)
+
+[FEATURE] User Managemen (features/Forms/Demo.feature:1)
+  ✘ SCENARIO: Open User Managemen page [FAILED] - 8.24s
+      — Then  I click on &quot;User Management&quot; from the menu (8.24s)
+      — Then  I wait for 3 seconds (0ms)
+  ✘ SCENARIO: Fill User information page [FAILED] - 21.20s
+      ✓ Given I am on the &quot;User Management&quot; page (0ms)
+      — When  I click on the Add button (21.20s)
+      — When  I type &quot;Test6&quot; in the input &quot;userName&quot; (0ms)
+      — Then  I type &quot;john@gmail.com&quot; in the input &quot;email&quot; (0ms)
+      — Then  I type &quot;6734566567&quot; in the input &quot;mobile&quot; (0ms)
+      — Then  I select &quot;LOCAL&quot; from the &quot;loginType&quot; dropdown (0ms)
+      — Then  I type &quot;Mohamed@&quot; in the input &quot;password&quot; (0ms)
+      — Then  I wait for 1 seconds (0ms)
+      — Then  I select &quot;Active&quot; from the &quot;userStatus&quot; dropdown (0ms)
+      — Then  I select &quot;Employee&quot; from the &quot;usertype&quot; dropdown (0ms)
+      — Then  I click on the Next button (0ms)
+  ✘ SCENARIO: Fill Company &amp; setings in this page [FAILED] - 3.00s
+      ✓ Then  I wait for 3 seconds (3.00s)
+      — Then  I check the checkbox with id &quot;chk_option_company_101&quot; (0ms)
+      — Then  I click on the &quot;default_company_101&quot; button (0ms)
+      — Then  I select &quot;Main&quot; from the &quot;warehouse&quot; dropdown (0ms)
+      — Then  I select &quot;Asset&quot; from the &quot;cashledger&quot; dropdown (0ms)
+      — Then  I wait for 3 seconds (0ms)
+      — Then  I check the checkbox with id &quot;chk_option_app_1&quot; (0ms)
+      — Then  I wait for 3 seconds (0ms)
+      — Then  I check the checkbox with id &quot;chk_option_group_3&quot; (0ms)
+      — Then  I wait for 3 seconds (0ms)
+      — Then  I check the checkbox with id &quot;chk_option_group_1&quot; (0ms)
+      — Then  I click on the Save button (0ms)
+  ✘ SCENARIO: Search for a user by name [FAILED] - 10ms
+      — Then  I type &quot;Test6&quot; in the search bar (10ms)
+      — Then  I wait for 1 seconds (0ms)
+      — Then  I clear the search bar (0ms)
+  ✘ SCENARIO: Search for a user by name [FAILED] - 33ms
+      — Then  I select &quot;All Statuses&quot; from the &quot;status&quot; dropdown (33ms)
+      — Then  I click on the Clear button (0ms)
+      — Then  I select &quot;Active&quot; from the &quot;status&quot; dropdown (0ms)
+      — Then  I click on the Clear button (0ms)
+      — Then  I select &quot;InActive&quot; from the &quot;status&quot; dropdown (0ms)
+      — Then  I click on the Clear button (0ms)
+      — Then  I select &quot;Deleted&quot; from the &quot;status&quot; dropdown (0ms)
+      — Then  I click on the Clear button (0ms)
+  ✘ SCENARIO: Filter users by type EMPLOYEE [FAILED] - 28ms
+      — Then  I select &quot;Admin&quot; from the &quot;type&quot; dropdown (28ms)
+      — Then  I wait for 3 seconds (0ms)
+      — Then  I click on the Clear button (0ms)
+  ✘ SCENARIO: View details of select user [FAILED] - 5.01s
+      ✓ Then  I wait for 5 seconds (5.00s)
+      — Then  I type &quot;Test6&quot; in the search bar (10ms)
+      — Then  I click on the &quot;btn_actions_9&quot; button (0ms)
+      — Then  I click on the &quot;View Details&quot; button (0ms)
+      — Then  I wait for 2 seconds (0ms)
+      — Then  I click on the close button (0ms)
+  ✘ SCENARIO: Edit details of select user [FAILED] - 5.01s
+      ✓ Then  I wait for 5 seconds (5.00s)
+      — Then  I type &quot;Test6&quot; in the search bar (12ms)
+      — Then  I click on the &quot;btn_actions_9&quot; button (0ms)
+      — Then  I click on the &quot;Edit Details&quot; button (0ms)
+      — Then  I select &quot;Inactive&quot; from the &quot;userStatus&quot; dropdown (0ms)
+      — Then  I wait for 2 seconds (0ms)
+      — Then  I click on the Save button (0ms)
+
+╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                       EXECUTION SUMMARY                                           ║
+╠═══════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Scenarios : Total: 9   | Passed: 1   | Failed: 8   | Skipped: 0                         ║
+║  Pass Rate : [███░░░░░░░░░░░░░░░░░░░░░░░░░░░] 11%                                              ║
+║  Steps     : Total: 60  | Passed: 12  | Failed: 8   | Skipped: 40                        ║
+║  Duration  : 1m 9.3s                                                                               ║
+║  Status    : TESTS FAILED — ACTION REQUIRED                                                        ║
+╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LIGHTBOX MODAL -->
+<div class="lightbox-modal" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img src="" alt="Screenshot Full View" class="lightbox-img" id="lightbox-img" onclick="event.stopPropagation()" />
+</div>
+
+<script>
+/* ─── TAB SWITCHING ────────────────────────────────────────── */
+function switchView(viewName) {
+  var scView = document.getElementById('view-scenarios');
+  var termView = document.getElementById('view-terminal');
+  var scTab = document.getElementById('tab-scenarios');
+  var termTab = document.getElementById('tab-terminal');
+
+  if (viewName === 'terminal') {
+    scView.style.display = 'none';
+    termView.style.display = 'block';
+    scTab.classList.remove('active');
+    termTab.classList.add('active');
+  } else {
+    scView.style.display = 'block';
+    termView.style.display = 'none';
+    scTab.classList.add('active');
+    termTab.classList.remove('active');
+  }
+}
+
+/* ─── ACCORDION TOGGLES ────────────────────────────────────── */
+function toggleFeature(featId) {
+  var body = document.getElementById(featId + '-body');
+  var arr = document.getElementById(featId + '-arr');
+  if (body) {
+    body.classList.toggle('collapsed');
+    if (arr) arr.classList.toggle('open');
+  }
+}
+
+function toggleScenario(scId) {
+  var body = document.getElementById(scId + '-body');
+  var arr = document.getElementById(scId + '-arr');
+  if (body) {
+    body.classList.toggle('collapsed');
+    if (arr) arr.classList.toggle('open');
+  }
+}
+
+function toggleStepDetails(detailId, btn) {
+  var el = document.getElementById(detailId);
+  if (!el) return;
+  var isHidden = window.getComputedStyle(el).display === 'none';
+  el.style.display = isHidden ? 'block' : 'none';
+  if (btn) {
+    btn.classList.toggle('open', isHidden);
+  }
+}
+
+/* ─── SCROLL TO SCENARIO FROM MONITOR ──────────────────────── */
+function scrollToScenario(scId) {
+  var target = document.getElementById(scId);
+  if (!target) return;
+
+  // Ensure parent feature is expanded
+  var feat = target.closest('.feature-card');
+  if (feat) {
+    var fb = feat.querySelector('.ft-body');
+    var fa = feat.querySelector('.ft-arr');
+    if (fb && fb.classList.contains('collapsed')) {
+      fb.classList.remove('collapsed');
+      if (fa) fa.classList.add('open');
+    }
+  }
+
+  // Ensure scenario itself is expanded
+  var scBody = document.getElementById(scId + '-body');
+  var scArr = document.getElementById(scId + '-arr');
+  if (scBody && scBody.classList.contains('collapsed')) {
+    scBody.classList.remove('collapsed');
+    if (scArr) scArr.classList.add('open');
+  }
+
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  target.classList.add('highlighted');
+  setTimeout(function() {
+    target.classList.remove('highlighted');
+  }, 1600);
+}
+
+/* ─── SEARCH & FILTERING ───────────────────────────────────── */
+var currentStatusFilter = 'all';
+
+function filterByStatus(status, btn) {
+  currentStatusFilter = status;
+  document.querySelectorAll('.filter-btn-group .f-pill').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  if (btn) btn.classList.add('active');
+  applyFilters();
+}
+
+function handleSearch(query) {
+  applyFilters();
+}
+
+function applyFilters() {
+  var query = (document.getElementById('scenario-search').value || '').toLowerCase().trim();
+
+  // Filter monitor cards
+  document.querySelectorAll('.mon-card').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    var matchQuery = !query || text.indexOf(query) !== -1;
+    var matchStatus = (currentStatusFilter === 'all') || card.classList.contains('mon-' + currentStatusFilter);
+    card.style.display = (matchQuery && matchStatus) ? 'flex' : 'none';
+  });
+
+  // Filter scenario cards in details
+  document.querySelectorAll('.scenario-card').forEach(function(sc) {
+    var text = sc.textContent.toLowerCase();
+    var matchQuery = !query || text.indexOf(query) !== -1;
+    var matchStatus = (currentStatusFilter === 'all') || sc.classList.contains('scenario-' + currentStatusFilter);
+    sc.style.display = (matchQuery && matchStatus) ? '' : 'none';
+  });
+}
+
+/* ─── LIGHTBOX MODAL ───────────────────────────────────────── */
+function openLightbox(url) {
+  var modal = document.getElementById('lightbox');
+  var img = document.getElementById('lightbox-img');
+  img.src = url;
+  modal.classList.add('active');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+/* ─── UTILITIES ────────────────────────────────────────────── */
+function copyText(btn, text) {
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.innerText;
+    btn.innerText = '✓ Copied!';
+    setTimeout(function() { btn.innerText = orig; }, 1800);
+  }).catch(function() {
+    alert('Failed to copy');
+  });
+}
+
+function copyTerminal() {
+  var text = document.getElementById('term-text').innerText;
+  navigator.clipboard.writeText(text).then(function() {
+    alert('Terminal output copied to clipboard!');
+  });
+}
+
+function downloadLog() {
+  var text = document.getElementById('term-text').innerText;
+  var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'behave_execution_terminal.log';
+  a.click();
+}
+
+function toggleTermFullscreen() {
+  var win = document.querySelector('.terminal-window');
+  if (!document.fullscreenElement) {
+    win.requestFullscreen().catch(function(){});
+  } else {
+    document.exitFullscreen().catch(function(){});
+  }
+}
+
+// Auto-expand failed scenarios on page load
+window.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.scenario-failed').forEach(function(sc) {
+    var body = sc.querySelector('.sc-body');
+    var arr = sc.querySelector('.sc-circle-btn');
+    if (body) body.classList.remove('collapsed');
+    if (arr) arr.classList.add('open');
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AcSys Automation Guide & Step Bindings Reference</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --sidebar-w: 260px;
+      --header-h: 60px;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0ea5e9;
+      --purple: #8b5cf6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0 1.5rem;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-tag {
+      background: #0284c7;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    #search {
+      flex: 1;
+      max-width: 520px;
+      padding: .45rem .9rem;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: .875rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    #search::placeholder { color: #94a3b8; }
+    #search:focus { border-color: #38bdf8; background: #0f172a; box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+
+    header .meta {
+      margin-left: auto;
+      font-size: .75rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: flex;
+      margin-top: var(--header-h);
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    nav {
+      width: var(--sidebar-w);
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    nav ul { list-style: none; }
+
+    nav li a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .5rem 1.25rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .8rem;
+      transition: background .15s, color .15s;
+    }
+
+    nav li a:hover { background: #f1f5f9; color: var(--text); }
+    nav li a.active {
+      background: #e0f2fe;
+      color: var(--accent);
+      font-weight: 600;
+      border-right: 3px solid var(--accent);
+    }
+
+    .sidebar-heading {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      padding: 0.75rem 1.25rem 0.25rem;
+      font-weight: 700;
+    }
+
+    .sidebar-count {
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 9999px;
+      padding: .1rem .45rem;
+      font-size: .7rem;
+      font-weight: 600;
+    }
+
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 1.5rem 2rem 4rem;
+      max-width: 1200px;
+    }
+
+    .file-section {
+      margin-bottom: 2.5rem;
+      scroll-margin-top: calc(var(--header-h) + 1.5rem);
+    }
+
+    .file-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .file-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-count {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: #e2e8f0;
+      padding: .15rem .5rem;
+      border-radius: 9999px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .step-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+
+    .step-badges {
+      display: flex;
+      gap: .3rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    .badge.given { background: #e0e7ff; color: #3730a3; }
+    .badge.when  { background: #fef3c7; color: #92400e; }
+    .badge.then  { background: #dcfce7; color: #166534; }
+    .badge.pass  { background: #dcfce7; color: #15803d; }
+    .badge.info  { background: #e0f2fe; color: #0369a1; }
+    .badge.warn  { background: #fef3c7; color: #b45309; }
+    .badge.purple{ background: #f3e8ff; color: #6b21a8; }
+
+    .step-pattern {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .82rem;
+      font-weight: 600;
+      color: #0369a1;
+      line-height: 1.4;
+      word-break: break-word;
+      cursor: pointer;
+    }
+
+    .step-pattern:hover {
+      text-decoration: underline;
+    }
+
+    .step-doc {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .copy-hint {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+    }
+
+    /* Variable pill */
+    .param {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 0 4px;
+      border-radius: 3px;
+      color: #b91c1c;
+      font-size: 0.78rem;
+    }
+
+    /* Toast notification */
+    #copyToast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #fff;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 200;
+      animation: toastIn 0.2s ease;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧪 AcSys Automation Guide <span class="badge-tag">BDD Reference</span></h1>
+  <input id="search" type="search" placeholder="Search steps (e.g., 'click', 'dropdown', 'wait', 'type')…" autocomplete="off" />
+  <span class="meta">AcSys ERP • Behave + Selenium</span>
+</header>
+
+<div class="layout">
+  <nav>
+    <div class="sidebar-heading">Navigation</div>
+    <ul>
+      <li><a href="#overview">Overview <span class="sidebar-count">1</span></a></li>
+      <li><a href="#structure">Directory Layout <span class="sidebar-count">2</span></a></li>
+    </ul>
+
+    <div class="sidebar-heading">Step Bindings Reference</div>
+    <ul>
+      <li><a href="#sb-auth" class="active">Auth & Login <span class="sidebar-count">9</span></a></li>
+      <li><a href="#sb-nav">Navigation & Tabs <span class="sidebar-count">9</span></a></li>
+      <li><a href="#sb-waits">Waits & Render <span class="sidebar-count">6</span></a></li>
+      <li><a href="#sb-buttons">Buttons & Clicks <span class="sidebar-count">18</span></a></li>
+      <li><a href="#sb-inputs">Inputs & Typing <span class="sidebar-count">5</span></a></li>
+      <li><a href="#sb-dropdowns">Dropdowns & Select <span class="sidebar-count">8</span></a></li>
+      <li><a href="#sb-dates">Date Pickers <span class="sidebar-count">8</span></a></li>
+      <li><a href="#sb-checks">Checkboxes & Radios <span class="sidebar-count">8</span></a></li>
+      <li><a href="#sb-devx">DevExtreme Grid <span class="sidebar-count">18</span></a></li>
+      <li><a href="#sb-files">Files & Downloads <span class="sidebar-count">11</span></a></li>
+      <li><a href="#sb-modals">Dialogs & Modals <span class="sidebar-count">14</span></a></li>
+      <li><a href="#sb-vars">Dynamic Variables <span class="sidebar-count">7</span></a></li>
+    </ul>
+
+    <div class="sidebar-heading">Outputs & Runner</div>
+    <ul>
+      <li><a href="#artifacts">Outputs & Artifacts <span class="sidebar-count">3</span></a></li>
+      <li><a href="#commands">CLI Commands <span class="sidebar-count">4</span></a></li>
+      <li><a href="#notes">Best Practices <span class="sidebar-count">3</span></a></li>
+    </ul>
+  </nav>
+
+  <main id="mainContent">
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="file-section">
+      <div class="file-header">
+        <h2>Overview & Architecture <span class="step-count">System</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">BDD</span></div>
+            <code class="step-pattern">Behavior-Driven Development</code>
+          </div>
+          <div class="step-doc">Test scenarios are written in Gherkin feature files (<code>features/Forms/*.feature</code>). Behave binds each English sentence to Selenium code.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">SESSION</span></div>
+            <code class="step-pattern">Singleton Browser Session</code>
+          </div>
+          <div class="step-doc">Chrome is launched once by <code>features/environment.py</code> and kept open across all scenarios, avoiding repeated logins and cutting execution time by 70%.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIRECTORY STRUCTURE -->
+    <section id="structure" class="file-section">
+      <div class="file-header">
+        <h2>Directory Structure <span class="step-count">Layout</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">AUTH</span></div>
+            <code class="step-pattern">features/steps/auth/login_steps.py</code>
+          </div>
+          <div class="step-doc">Handles login, tenant code entry, company selection, credentials, and dashboard arrival.</div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">STEPS</span></div>
+            <code class="step-pattern">features/steps/common/all_steps.py</code>
+          </div>
+          <div class="step-doc">180+ universal step definitions covering navigation, buttons, inputs, dropdowns, DevX tables, calendars, modals, and downloads.</div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge purple">HELPERS</span></div>
+            <code class="step-pattern">features/steps/common/helpers.py</code>
+          </div>
+          <div class="step-doc">Core Selenium utilities: fast element resolution, automation ID selectors (<code>aid()</code>), scroll helpers, and value resolution.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- STEP BINDINGS REFERENCE SECTIONS -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- 1. AUTH & LOGIN -->
+    <section id="sb-auth" class="file-section">
+      <div class="file-header">
+        <h2>Authentication & Login Steps <span class="step-count">login_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="given i open the login page">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge given">GIVEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Given I open the login page</code>
+          </div>
+          <div class="step-doc">Navigates to <code>LOGIN_URL</code> configured in <code>config.env</code>.</div>
+        </div>
+
+        <div class="step-card" data-step="when i enter the tenantcode">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I enter the tenantCode</code>
+          </div>
+          <div class="step-doc">Inputs tenant code from config into <code>inp_tenantcode</code>.</div>
+        </div>
+
+        <div class="step-card" data-step='when i select the company "{company_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I select the company "{company_name}"</code>
+          </div>
+          <div class="step-doc">Searches and clicks the specified company name in tenant selection.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the continue button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Continue button</code>
+          </div>
+          <div class="step-doc">Clicks the tenant code continue button (<code>btn_continue</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="when i enter the username">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I enter the username</code>
+          </div>
+          <div class="step-doc">Types the username from <code>config.env</code> into <code>inp_username</code>.</div>
+        </div>
+
+        <div class="step-card" data-step="when i enter the password">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I enter the password</code>
+          </div>
+          <div class="step-doc">Types the password from <code>config.env</code> into <code>inp_password</code>.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the sign in button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Sign In button</code>
+          </div>
+          <div class="step-doc">Clicks the sign in / submit button (<code>btn_signin</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="then i should see the dashboard page">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I should see the dashboard page</code>
+          </div>
+          <div class="step-doc">Verifies dashboard toolbar/navigation has successfully loaded.</div>
+        </div>
+
+        <div class="step-card" data-step="then i expand all menus in the toolbar">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I expand all menus in the toolbar</code>
+          </div>
+          <div class="step-doc">Expands all sidebar toolbar menus to make all feature items clickable.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. NAVIGATION & TABS -->
+    <section id="sb-nav" class="file-section">
+      <div class="file-header">
+        <h2>Navigation, Menus & Tabs <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step='given i am on the "{page_name}" page'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge given">GIVEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Given I am on the "{page_name}" page</code>
+          </div>
+          <div class="step-doc">Asserts or waits until the specified page header is visible.</div>
+        </div>
+
+        <div class="step-card" data-step="given i am on the dashboard page">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge given">GIVEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Given I am on the dashboard page</code>
+          </div>
+          <div class="step-doc">Verifies the user is on the main application dashboard.</div>
+        </div>
+
+        <div class="step-card" data-step='when i click on "{menu_item}" from the menu'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I click on "{menu_item}" from the menu</code>
+          </div>
+          <div class="step-doc">Finds and clicks a menu navigation link (e.g., <code>"User Management"</code>, <code>"Ticket Manager"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='given i am on the "{tab_name}" menu tab'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge given">GIVEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Given I am on the "{tab_name}" menu tab</code>
+          </div>
+          <div class="step-doc">Verifies that the specified upper menu tab is active.</div>
+        </div>
+
+        <div class="step-card" data-step='when i switch to the "{tab_name}" menu tab'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I switch to the "{tab_name}" menu tab</code>
+          </div>
+          <div class="step-doc">Clicks the tab header to switch active workspace view.</div>
+        </div>
+
+        <div class="step-card" data-step='then i switch to tab "{tab_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I switch to tab "{tab_name}"</code>
+          </div>
+          <div class="step-doc">Alias for tab switching (e.g., <code>"My Request"</code>, <code>"Common Task"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='then i should see the "{tab_name}" menu tab is active'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I should see the "{tab_name}" menu tab is active</code>
+          </div>
+          <div class="step-doc">Asserts that the tab has active/selected CSS class.</div>
+        </div>
+
+        <div class="step-card" data-step='then i close the "{tab_name}" menu tab'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I close the "{tab_name}" menu tab</code>
+          </div>
+          <div class="step-doc">Clicks the close 'x' icon on the designated workspace tab.</div>
+        </div>
+
+        <div class="step-card" data-step='then the "{tab_name}" menu tab should not exist'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then the "{tab_name}" menu tab should not exist</code>
+          </div>
+          <div class="step-doc">Verifies that the tab is removed from the DOM.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. WAITS & RENDER STATE -->
+    <section id="sb-waits" class="file-section">
+      <div class="file-header">
+        <h2>Waits & Render State <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="then i wait for the page to be fully loaded">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I wait for the page to be fully loaded</code>
+          </div>
+          <div class="step-doc">Waits for <code>document.readyState === 'complete'</code> and spinner dismissal.</div>
+        </div>
+
+        <div class="step-card" data-step="then i wait for the page to be rendered">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge given">GIVEN</span><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I wait for the page to be rendered</code>
+          </div>
+          <div class="step-doc">Waits for Angular/DevExtreme components to finish rendering.</div>
+        </div>
+
+        <div class="step-card" data-step="then the page is ready">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then the page is ready</code>
+          </div>
+          <div class="step-doc">Synonym to verify page rendering is complete.</div>
+        </div>
+
+        <div class="step-card" data-step="then i wait for {seconds:d} seconds">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I wait for {seconds:d} seconds</code>
+          </div>
+          <div class="step-doc">Pauses execution for N seconds (e.g., <code>Then I wait for 2 seconds</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="then i debug the page">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I debug the page</code>
+          </div>
+          <div class="step-doc">Prints console diagnosis of visible inputs, buttons, and current URL.</div>
+        </div>
+
+        <div class="step-card" data-step="then i close any open notifications">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I close any open notifications</code>
+          </div>
+          <div class="step-doc">Dismisses any lingering snackbars or floating alert toasts.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. BUTTONS & CLICKS -->
+    <section id="sb-buttons" class="file-section">
+      <div class="file-header">
+        <h2>Buttons & Actions <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="when i click on the add button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I click on the Add button</code>
+          </div>
+          <div class="step-doc">Clicks the primary Add / New record button (<code>btn_add</code>, <code>Add</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the save button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Save button</code>
+          </div>
+          <div class="step-doc">Clicks the primary Save button in forms or modal dialogs.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the cancel button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Cancel button</code>
+          </div>
+          <div class="step-doc">Clicks the Cancel button to discard dialog changes.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the close button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Close button</code>
+          </div>
+          <div class="step-doc">Finds and clicks the modal Close / 'X' button.</div>
+        </div>
+
+        <div class="step-card" data-step="then i close the dialog">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I close the dialog</code>
+          </div>
+          <div class="step-doc">Smart dismiss: clicks Close button or modal backdrop.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the submit button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Submit button</code>
+          </div>
+          <div class="step-doc">Clicks form submission button.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the clear button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Clear button</code>
+          </div>
+          <div class="step-doc">Clicks the filter/form reset button.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the next button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Next button</code>
+          </div>
+          <div class="step-doc">Advances to next tab/step in wizard dialogs.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the back button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Back button</code>
+          </div>
+          <div class="step-doc">Returns to previous tab/step in wizard dialogs.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the export button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Export button</code>
+          </div>
+          <div class="step-doc">Triggers data export.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on the import button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Import button</code>
+          </div>
+          <div class="step-doc">Opens the import file dialog.</div>
+        </div>
+
+        <div class="step-card" data-step='then i click on the "{button_name}" button'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the "{button_name}" button</code>
+          </div>
+          <div class="step-doc">Clicks any arbitrary button by its visible text (e.g. <code>"Create User"</code>, <code>"Update User"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on yes in the delete confirmation dialog">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on Yes in the delete confirmation dialog</code>
+          </div>
+          <div class="step-doc">Confirms deletion in confirmation popup.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click on no in the delete confirmation dialog">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on No in the delete confirmation dialog</code>
+          </div>
+          <div class="step-doc">Cancels deletion in confirmation popup.</div>
+        </div>
+
+        <div class="step-card" data-step='when i click "{name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I click "{name}"</code>
+          </div>
+          <div class="step-doc">Generic click by visible text or automation ID.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. INPUTS & TYPING -->
+    <section id="sb-inputs" class="file-section">
+      <div class="file-header">
+        <h2>Input Fields & Search <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step='then i type "{text}" in the input "{field_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I type "{text}" in the input "{field_name}"</code>
+          </div>
+          <div class="step-doc">Types text into input by placeholder, name, id, or <code>data-testid="inp_{field_name}"</code>.</div>
+        </div>
+
+        <div class="step-card" data-step='then i type "{value}" in "{field}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I type "{value}" in "{field}"</code>
+          </div>
+          <div class="step-doc">Short alias to type text into any named field (e.g. <code>Then I type "Test6" in "userName"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='then i clear the input "{field_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I clear the input "{field_name}"</code>
+          </div>
+          <div class="step-doc">Clears text content from the specified input field.</div>
+        </div>
+
+        <div class="step-card" data-step='then i type "{text}" in the search bar'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I type "{text}" in the search bar</code>
+          </div>
+          <div class="step-doc">Finds page search bar and types query with automatic delay.</div>
+        </div>
+
+        <div class="step-card" data-step="then i clear the search bar">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I clear the search bar</code>
+          </div>
+          <div class="step-doc">Selects all and deletes text from the active search bar.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DROPDOWNS & SELECTION -->
+    <section id="sb-dropdowns" class="file-section">
+      <div class="file-header">
+        <h2>Dropdowns & Multi-Select <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step='then i select "{option_text}" from the "{dropdown_label}" dropdown'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{option_text}" from the "{dropdown_label}" dropdown</code>
+          </div>
+          <div class="step-doc">Opens dropdown (mat-select or native select) and selects option (e.g. <code>"Active" from "status"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='then i select "{option_text}" from the "{dropdown_label}" searchable dropdown'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{option_text}" from the "{dropdown_label}" searchable dropdown</code>
+          </div>
+          <div class="step-doc">Selects an option from a searchable or filtered select menu (used in Ticket Manager).</div>
+        </div>
+
+        <div class="step-card" data-step='then i select "{options}" from the "{dropdown_label}" multi-select dropdown'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{options}" from the "{dropdown_label}" multi-select dropdown</code>
+          </div>
+          <div class="step-doc">Selects multiple comma-separated items from a multi-select dropdown.</div>
+        </div>
+
+        <div class="step-card" data-step='then i clear all selections from the "{dropdown_label}" multi-select'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I clear all selections from the "{dropdown_label}" multi-select</code>
+          </div>
+          <div class="step-doc">Deselects all checked options in a multi-select dropdown.</div>
+        </div>
+
+        <div class="step-card" data-step='then i type and select "{option_text}" in the autocomplete input "{field_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I type and select "{option_text}" in the autocomplete input "{field_name}"</code>
+          </div>
+          <div class="step-doc">Types into an autocomplete field and clicks matching popup suggestion.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. DATE PICKERS -->
+    <section id="sb-dates" class="file-section">
+      <div class="file-header">
+        <h2>Date Pickers & Calendars <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step='then i open the date picker calendar and select "{date}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I open the date picker calendar and select "{date}"</code>
+          </div>
+          <div class="step-doc">Opens calendar popup and picks date (supports <code>today</code>, <code>today+3</code>, <code>YYYY-MM-DD</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='then i select the date range from "{start_date}" to "{end_date}" in the start-end date picker calender'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select the date range from "{start_date}" to "{end_date}" in the start-end date picker calender</code>
+          </div>
+          <div class="step-doc">Selects both start and end dates in a dual date range picker.</div>
+        </div>
+
+        <div class="step-card" data-step='then i select "{month_year}" in the "{picker_id}" month year picker calendar'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{month_year}" in the "{picker_id}" month year picker calendar</code>
+          </div>
+          <div class="step-doc">Selects a month and year view (e.g. <code>"March 2026"</code>).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. CHECKBOXES & RADIOS -->
+    <section id="sb-checks" class="file-section">
+      <div class="file-header">
+        <h2>Checkboxes, Radios & Chips <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step='when i check the checkbox labelled "{label}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I check the checkbox labelled "{label}"</code>
+          </div>
+          <div class="step-doc">Checks a checkbox by its adjacent label text (e.g. <code>"Enable access"</code>, <code>"ERP"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='when i uncheck the checkbox labelled "{label}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I uncheck the checkbox labelled "{label}"</code>
+          </div>
+          <div class="step-doc">Unchecks a checkbox if currently selected.</div>
+        </div>
+
+        <div class="step-card" data-step='then i select "{option}" for the radio group "{group_name}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{option}" for the radio group "{group_name}"</code>
+          </div>
+          <div class="step-doc">Selects a radio button within a named radio group.</div>
+        </div>
+
+        <div class="step-card" data-step='then i select "{options}" from the "{dropdown_label}" chip input'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I select "{options}" from the "{dropdown_label}" chip input</code>
+          </div>
+          <div class="step-doc">Adds one or more tags/chips to a chip list component.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. DEVOPS & DEVEXTREME GRID -->
+    <section id="sb-devx" class="file-section">
+      <div class="file-header">
+        <h2>DevExtreme Grid (DevX) <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="then i click on the devx add button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the devx Add button</code>
+          </div>
+          <div class="step-doc">Clicks the '+' add row icon inside a DevExtreme grid toolbar.</div>
+        </div>
+
+        <div class="step-card" data-step="then i click the devx inline save button">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click the devx inline Save button</code>
+          </div>
+          <div class="step-doc">Saves an inline-edited DevExtreme grid row.</div>
+        </div>
+
+        <div class="step-card" data-step='then i type "{text}" in devx search bar'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I type "{text}" in devx search bar</code>
+          </div>
+          <div class="step-doc">Searches inside the DevExtreme table filter bar (e.g. <code>"Open"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step="then i clear the devx search bar">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I clear the devx search bar</code>
+          </div>
+          <div class="step-doc">Clears the DevExtreme grid search box.</div>
+        </div>
+
+        <div class="step-card" data-step='then i click on the export to excel devx button'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click on the Export to Excel devx button</code>
+          </div>
+          <div class="step-doc">Clicks the Excel export button in the DevExtreme toolbar.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. FILE UPLOADS & DOWNLOADS -->
+    <section id="sb-files" class="file-section">
+      <div class="file-header">
+        <h2>File Uploads & Downloads <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="then the excel file should download successfully">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then the excel file should download successfully</code>
+          </div>
+          <div class="step-doc">Checks <code>downloads/</code> folder for newly created <code>.xlsx</code> / <code>.xls</code> file.</div>
+        </div>
+
+        <div class="step-card" data-step="then the csv file should download successfully">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then the csv file should download successfully</code>
+          </div>
+          <div class="step-doc">Checks <code>downloads/</code> folder for newly created <code>.csv</code> file.</div>
+        </div>
+
+        <div class="step-card" data-step='when i upload "{filename}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I upload "{filename}"</code>
+          </div>
+          <div class="step-doc">Uploads a file from the <code>uploads/</code> directory into active file input.</div>
+        </div>
+
+        <div class="step-card" data-step="then i clean up the downloaded files">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I clean up the downloaded files</code>
+          </div>
+          <div class="step-doc">Deletes leftover temporary files from <code>downloads/</code>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. DIALOGS, MODALS & TOASTS -->
+    <section id="sb-modals" class="file-section">
+      <div class="file-header">
+        <h2>Dialogs, Modals, Toasts & Icons <span class="step-count">all_steps.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card" data-step="then i should see the dialog box">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I should see the dialog box</code>
+          </div>
+          <div class="step-doc">Asserts that a modal or popup dialog is currently open and visible.</div>
+        </div>
+
+        <div class="step-card" data-step="then i should see the success toast">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I should see the success toast</code>
+          </div>
+          <div class="step-doc">Waits for green success confirmation toast/snackbar to appear.</div>
+        </div>
+
+        <div class="step-card" data-step='when i scroll down the "{panel_name}" panel'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I scroll down the "{panel_name}" panel</code>
+          </div>
+          <div class="step-doc">Scrolls down an inner modal panel (e.g. <code>"settings-panel"</code>).</div>
+        </div>
+
+        <div class="step-card" data-step='when i click row actions for user "{username}"'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">When I click row actions for user "{username}"</code>
+          </div>
+          <div class="step-doc">Opens the 3-dots action menu for the specified table row user.</div>
+        </div>
+
+        <div class="step-card" data-step='then i click the "{icon}" icon'>
+          <div class="step-header">
+            <div class="step-badges"><span class="badge when">WHEN</span><span class="badge then">THEN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">Then I click the "{icon}" icon</code>
+          </div>
+          <div class="step-doc">Clicks an icon button (e.g. <code>"toggle_password_visibility"</code>).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. DYNAMIC VARIABLES -->
+    <section id="sb-vars" class="file-section">
+      <div class="file-header">
+        <h2>Dynamic Variables & Resolvers <span class="step-count">helpers.py</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">VAR</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">{timestamp}</code>
+          </div>
+          <div class="step-doc">Resolves to current date & time: <code>2026-09-21 11:30:00</code>. Ideal for unique usernames.</div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">VAR</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">{date}</code>
+          </div>
+          <div class="step-doc">Resolves to current date in ISO format: <code>2026-09-21</code>.</div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">VAR</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">today+3 / today-1</code>
+          </div>
+          <div class="step-doc">Dynamic relative dates. Automatically calculates future or past calendar dates.</div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">VAR</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">{unix}</code>
+          </div>
+          <div class="step-doc">Current unix timestamp in seconds for guaranteed uniqueness.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARTIFACTS & OUTPUTS -->
+    <section id="artifacts" class="file-section">
+      <div class="file-header">
+        <h2>Outputs & Artifacts <span class="step-count">Output</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge info">HTML</span></div>
+            <code class="step-pattern">reports/*.html</code>
+          </div>
+          <div class="step-doc">Rich visual test execution summaries generated automatically after each test run.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge warn">PNG</span></div>
+            <code class="step-pattern">screenshots/*.png</code>
+          </div>
+          <div class="step-doc">Captured on step failure and indexed in <code>screenshot_index.json</code>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMANDS -->
+    <section id="commands" class="file-section">
+      <div class="file-header">
+        <h2>Runner Execution Commands <span class="step-count">CLI</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">RUN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">run_tests.bat</code>
+          </div>
+          <div class="step-doc">Double-click or run from command prompt for interactive menu.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">RUN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">python BehaveTestRunner.py --run-all</code>
+          </div>
+          <div class="step-doc">Executes all feature files sequentially.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">RUN</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">python BehaveTestRunner.py --feature features/Forms/Demo.feature</code>
+          </div>
+          <div class="step-doc">Executes a single designated feature file.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-header">
+            <div class="step-badges"><span class="badge pass">DRY</span></div>
+            <code class="step-pattern" onclick="copyStep(this)">python -m behave --dry-run</code>
+          </div>
+          <div class="step-doc">Validates all step bindings without opening a browser window.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Copy Toast Notification -->
+<div id="copyToast">Copied step to clipboard!</div>
+
+<script>
+  // Copy Step to Clipboard
+  function copyStep(el) {
+    const text = el.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.getElementById('copyToast');
+      toast.textContent = `Copied: "${text}"`;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }).catch(() => {});
+  }
+
+  // Live Search Filtering
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.step-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const text = (card.dataset.step || card.textContent).toLowerCase();
+      if (!query || text.includes(query)) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Hide empty sections during search
+    document.querySelectorAll('.file-section').forEach(sec => {
+      const visibleInSec = sec.querySelectorAll('.step-card[style="display: flex;"]').length;
+      if (query && visibleInSec === 0) {
+        sec.style.display = 'none';
+      } else {
+        sec.style.display = 'block';
+      }
+    });
+  });
+
+  // Active link highlighter on scroll
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    const fromTop = window.scrollY + 100;
+    navLinks.forEach(link => {
+      const section = document.querySelector(link.hash);
+      if (section && section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AcSys ERP Automation Framework — Architecture & Execution Guide</title>
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #26354a;
+      --accent-blue: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-color: #334155;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    header {
+      height: 56px;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+      color: #000;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .slide-indicator {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      padding: 0.3rem 0.7rem;
+      background: var(--bg-card);
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border-color: transparent;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.25rem 2.75rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.99);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide-header {
+      margin-bottom: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .slide-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 0.35rem;
+    }
+
+    .slide-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .slide-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .flow-chain {
+      display: flex;
+      align-items: stretch;
+      gap: 0.75rem;
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .flow-node {
+      flex: 1;
+      min-width: 170px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+    }
+
+    .flow-node.highlight {
+      border-color: var(--accent-blue);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), rgba(30, 41, 59, 0.9));
+    }
+
+    .flow-step-num {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      font-family: var(--font-mono);
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-blue);
+      font-size: 1.2rem;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    .code-box {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+
+    .code-box .comment { color: #64748b; }
+    .code-box .cmd { color: #a5f3fc; font-weight: 600; }
+    .code-box .flag { color: #fbbf24; }
+    .code-box .arg { color: #f472b6; }
+    .code-box .keyword { color: #c084fc; font-weight: 600; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-red { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .list-bullet {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    footer {
+      height: 52px;
+      background: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .keyboard-hints {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .kbd {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      gap: 1.5rem;
+      padding: 1rem 2rem;
+    }
+
+    .hero-title {
+      font-size: 2.85rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: var(--bg-card);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      background: var(--bg-card);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #jumpMenu {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #jumpMenu.open {
+      display: flex;
+    }
+
+    .jump-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 540px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .jump-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      color: var(--text-main);
+      cursor: pointer;
+      margin-bottom: 0.4rem;
+      transition: all 0.15s;
+    }
+
+    .jump-item:hover {
+      background: var(--bg-card);
+      border-color: var(--accent-blue);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">Automation EXE</span>
+      <span>AcSys ERP Test Automation</span>
+    </div>
+
+    <div class="nav-controls">
+      <button class="btn" onclick="openJumpMenu()" title="Slide Index (Press M)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        <span>Slides</span>
+      </button>
+
+      <button class="btn" onclick="toggleFullScreen()" title="Fullscreen (Press F)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      </button>
+
+      <span class="slide-indicator" id="slideCount">1 / 9</span>
+
+      <button class="btn" id="prevBtn" onclick="prevSlide()" title="Previous (Left Arrow)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+
+      <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()" title="Next (Right Arrow / Space)">
+        <span>Next</span>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar" style="width: 11.1%;"></div>
+  </div>
+
+  <!-- SLIDES DECK -->
+  <main id="deck">
+
+    <!-- SLIDE 1: HERO -->
+    <section class="slide active" data-slide="1">
+      <div class="hero-container">
+        <div style="display:inline-flex; gap:0.5rem; margin-bottom:-0.5rem;">
+          <span class="badge badge-blue">Enterprise BDD Framework</span>
+          <span class="badge badge-purple">Selenium + Behave + PyInstaller</span>
+        </div>
+
+        <h1 class="hero-title">AcSys ERP Test Automation<br/>Platform & Execution Architecture</h1>
+        
+        <p class="hero-subtitle">
+          An end-to-end BDD testing framework featuring single-session browser pooling, automatic failure diagnostic screenshots, and zero-configuration interactive test execution.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Behavioral Driven (BDD)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">1 Session</div>
+            <div class="stat-label">Singleton Shared Browser</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">180+</div>
+            <div class="stat-label">Universal Step Bindings</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">Live HTML</div>
+            <div class="stat-label">Visual Test Reports</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <button class="btn btn-primary" onclick="nextSlide()" style="padding: 0.65rem 1.4rem; font-size: 1rem;">
+            <span>Explore How It Works</span>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: HOW IT WORKS -->
+    <section class="slide" data-slide="2">
+      <div class="slide-header">
+        <div class="slide-tag">Core Architecture</div>
+        <h2 class="slide-title">How the Automation System Works</h2>
+        <p class="slide-subtitle">Step-by-step pipeline from test invocation to final HTML report generation</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="flow-chain">
+          <div class="flow-node highlight">
+            <span class="flow-step-num">STEP 01</span>
+            <div style="font-weight:700; color:#fff; font-size:0.9rem;">Launcher</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              <code>run_tests.bat</code> or <code>BehaveTestRunner.py</code> resolves Python environment and CLI mode.
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-node">
+            <span class="flow-step-num">STEP 02</span>
+            <div style="font-weight:700; color:#fff; font-size:0.9rem;">Singleton Browser</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              <code>environment.py</code> initializes <strong>one shared Chrome instance</strong> with download preferences and waits.
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-node">
+            <span class="flow-step-num">STEP 03</span>
+            <div style="font-weight:700; color:#fff; font-size:0.9rem;">Auto-Login</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              Executes <code>login.feature</code> first to authenticate, expand menus, and reach the dashboard.
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-node highlight">
+            <span class="flow-step-num">STEP 04</span>
+            <div style="font-weight:700; color:#fff; font-size:0.9rem;">Feature Scenarios</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              Executes target feature (Forms, Tickets, Users). Reuses active session without re-logging in.
+            </div>
+          </div>
+          <div class="flow-arrow">→</div>
+
+          <div class="flow-node">
+            <span class="flow-step-num">STEP 05</span>
+            <div style="font-weight:700; color:#fff; font-size:0.9rem;">Diagnostic Report</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              On failure, captures screenshot to <code>screenshots/</code>; compiles JSON into interactive HTML report.
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 0.5rem;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">Shared Browser Session</div>
+            </div>
+            <p class="card-desc">
+              Instead of reopening Chrome for every single scenario, <code>environment.py</code> holds a global driver singleton. This cuts total execution time by up to <strong>70%</strong> and eliminates flaky re-authentications.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📸</div>
+              <div class="card-title">Automated Failure Capture</div>
+            </div>
+            <p class="card-desc">
+              The <code>after_scenario</code> hook automatically captures a timestamped full-page PNG screenshot on any assertion failure and records it in <code>screenshot_index.json</code> for report embedding.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📊</div>
+              <div class="card-title">Custom Reporting Engine</div>
+            </div>
+            <p class="card-desc">
+              <code>generate_report.py</code> parses Behave's raw JSON telemetry into standalone, color-coded HTML test dashboards that can be viewed offline or attached to test records.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: DIRECTORY STRUCTURE -->
+    <section class="slide" data-slide="3">
+      <div class="slide-header">
+        <div class="slide-tag">Project Organization</div>
+        <h2 class="slide-title">Workspace Directory Structure</h2>
+        <p class="slide-subtitle">Modular breakdown of feature specs, step definitions, outputs, and configs</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="card" style="font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.7; background: #070b14;">
+            <div style="color: var(--accent-blue); font-weight: 700; margin-bottom: 0.3rem;">Automatio_EXE/</div>
+            <div style="color: var(--text-muted);">├── <span style="color:#fbbf24;">config.env</span>                 <span style="color:#64748b;"># Credentials, URLs, timeouts</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#34d399;">BehaveTestRunner.py</span>        <span style="color:#64748b;"># Main orchestrator & CLI runner</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#34d399;">run_tests.bat</span>              <span style="color:#64748b;"># Double-click interactive menu</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#34d399;">setup.bat</span>                  <span style="color:#64748b;"># Automatic dependencies installer</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#a78bfa;">generate_report.py</span>         <span style="color:#64748b;"># Behave JSON -> HTML generator</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#f472b6;">features/</span></div>
+            <div style="color: var(--text-muted);">│   ├── <span style="color:#f472b6;">login.feature</span>          <span style="color:#64748b;"># Master login & menu expansion</span></div>
+            <div style="color: var(--text-muted);">│   ├── <span style="color:#f472b6;">environment.py</span>         <span style="color:#64748b;"># WebDriver lifecycle & hooks</span></div>
+            <div style="color: var(--text-muted);">│   ├── <span style="color:#f472b6;">Forms/</span>                 <span style="color:#64748b;"># Business feature specifications</span></div>
+            <div style="color: var(--text-muted);">│   └── <span style="color:#38bdf8;">steps/</span>                 <span style="color:#64748b;"># Step definitions</span></div>
+            <div style="color: var(--text-muted);">│       ├── <span style="color:#38bdf8;">auth/login_steps.py</span></div>
+            <div style="color: var(--text-muted);">│       └── <span style="color:#38bdf8;">common/all_steps.py</span></div>
+            <div style="color: var(--text-muted);">├── <span style="color:#94a3b8;">reports/</span>                   <span style="color:#64748b;"># Generated HTML test execution reports</span></div>
+            <div style="color: var(--text-muted);">└── <span style="color:#94a3b8;">screenshots/</span>               <span style="color:#64748b;"># Timestamped PNG failure captures</span></div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div class="card">
+              <div class="card-header">
+                <span class="badge badge-amber">Configuration</span>
+                <div class="card-title">config.env</div>
+              </div>
+              <p class="card-desc">
+                Centralized settings file containing <code>LOGIN_URL</code>, <code>USERNAME</code>, <code>PASSWORD</code>, <code>TENANT_CODE</code>, <code>WAIT_TIMEOUT</code>, and <code>CLOSE_BROWSER_AFTER_TEST</code>. No credentials need to be hardcoded in Python code.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <span class="badge badge-blue">Behavioral Specs</span>
+                <div class="card-title">features/Forms/*.feature</div>
+              </div>
+              <p class="card-desc">
+                High-level business scenarios written in Gherkin (<code>Given</code>, <code>When</code>, <code>Then</code>). Covers User Management, Ticket Manager, filtering, sorting, form submissions, and modals.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <span class="badge badge-purple">Step Definitions</span>
+                <div class="card-title">features/steps/common/all_steps.py</div>
+              </div>
+              <p class="card-desc">
+                Over 180 step bindings mapping human-readable English steps to robust Selenium interactions, with automated waits, DevExtreme grid controls, dropdown triggers, and modal helpers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: STEP BINDINGS REFERENCE (NEW!) -->
+    <section class="slide" data-slide="4">
+      <div class="slide-header">
+        <div class="slide-tag">Step Bindings Reference</div>
+        <h2 class="slide-title">Gherkin Step Definitions Catalog</h2>
+        <p class="slide-subtitle">180+ pre-built universal automation bindings across 12 functional categories</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this, 'tab-sb-buttons')">Buttons & Clicks</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-sb-inputs')">Inputs & Search</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-sb-dropdowns')">Dropdowns & Select</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-sb-devx')">DevExtreme Grid</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-sb-dates')">Date Pickers</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-sb-dialogs')">Modals & Toasts</button>
+        </div>
+
+        <div id="tab-sb-buttons" class="tab-pane active">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">When</span> I click on the Add button<br/>
+              <span class="keyword">Then</span> I click on the Save button<br/>
+              <span class="keyword">Then</span> I click on the Cancel button<br/>
+              <span class="keyword">Then</span> I click on the Close button<br/>
+              <span class="keyword">Then</span> I close the dialog<br/>
+              <span class="keyword">Then</span> I click on the Next button<br/>
+              <span class="keyword">Then</span> I click on the Back button<br/>
+              <span class="keyword">Then</span> I click on the <span class="arg">"{button_name}"</span> button
+            </div>
+            <div class="card">
+              <div class="card-title">Button Interaction Logic</div>
+              <p class="card-desc">
+                • Automatically scrolls buttons into viewport before clicking.<br/>
+                • Automatic fallback to JavaScript execution if masked by an Angular CDK overlay.<br/>
+                • Supports both standardized action IDs (<code>btn_add</code>, <code>btn_save</code>) and visible text.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-sb-inputs" class="tab-pane">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">When</span> I type <span class="arg">"{text}"</span> in the input <span class="arg">"{field_name}"</span><br/>
+              <span class="keyword">Then</span> I type <span class="arg">"{value}"</span> in <span class="arg">"{field}"</span><br/>
+              <span class="keyword">When</span> I clear the input <span class="arg">"{field_name}"</span><br/>
+              <span class="keyword">When</span> I type <span class="arg">"{text}"</span> in the search bar<br/>
+              <span class="keyword">Then</span> I clear the search bar
+            </div>
+            <div class="card">
+              <div class="card-title">Dynamic Variable Resolvers</div>
+              <p class="card-desc">
+                You can insert dynamic placeholders inside any typed string:<br/>
+                • <code>{timestamp}</code> → Current timestamp (e.g. <code>2026-09-21 11:30:00</code>)<br/>
+                • <code>{date}</code> → Current date in ISO format (<code>YYYY-MM-DD</code>)<br/>
+                • <code>today+3</code> / <code>today-1</code> → Relative date calculations.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-sb-dropdowns" class="tab-pane">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">When</span> I select <span class="arg">"{option}"</span> from the <span class="arg">"{dropdown}"</span> dropdown<br/>
+              <span class="keyword">When</span> I select <span class="arg">"{option}"</span> from the <span class="arg">"{dropdown}"</span> searchable dropdown<br/>
+              <span class="keyword">Then</span> I select <span class="arg">"{options}"</span> from the <span class="arg">"{dropdown}"</span> multi-select dropdown<br/>
+              <span class="keyword">Then</span> I clear all selections from the <span class="arg">"{dropdown}"</span> multi-select<br/>
+              <span class="keyword">When</span> I type and select <span class="arg">"{option}"</span> in the autocomplete input <span class="arg">"{field}"</span>
+            </div>
+            <div class="card">
+              <div class="card-title">Angular & Native Dropdowns</div>
+              <p class="card-desc">
+                • Handles <code>mat-select</code>, <code>ng-select</code>, <code>dx-select-box</code>, and standard HTML <code>&lt;select&gt;</code>.<br/>
+                • Waits for overlay panel animation before clicking option items.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-sb-devx" class="tab-pane">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">When</span> I click on the devx Add button<br/>
+              <span class="keyword">Then</span> I click the devx inline Save button<br/>
+              <span class="keyword">When</span> I type <span class="arg">"{val}"</span> in the devx input <span class="arg">"{col}"</span> column<br/>
+              <span class="keyword">When</span> I type <span class="arg">"{text}"</span> in devx search bar<br/>
+              <span class="keyword">Then</span> I clear the devx search bar<br/>
+              <span class="keyword">Then</span> I click on the Export to Excel devx button
+            </div>
+            <div class="card">
+              <div class="card-title">DevExtreme Grid Engine</div>
+              <p class="card-desc">
+                Specialized bindings built for DevExtreme DataGrids, supporting inline row editing, search panels, toolbar actions, and direct Excel export testing.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-sb-dates" class="tab-pane">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">When</span> I open the date picker calendar and select <span class="arg">"{date}"</span><br/>
+              <span class="keyword">When</span> I select the date range from <span class="arg">"{start}"</span> to <span class="arg">"{end}"</span> in the start-end date picker calender<br/>
+              <span class="keyword">Then</span> I clear the start-end date picker<br/>
+              <span class="keyword">When</span> I select <span class="arg">"{month_year}"</span> in the <span class="arg">"{id}"</span> month year picker calendar
+            </div>
+            <div class="card">
+              <div class="card-title">Calendar & Range Selectors</div>
+              <p class="card-desc">
+                Seamlessly selects dates from calendar popups, range pickers, and month-year filters with automatic month navigation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-sb-dialogs" class="tab-pane">
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="keyword">Then</span> I should see the dialog box<br/>
+              <span class="keyword">Then</span> I should see the success toast<br/>
+              <span class="keyword">When</span> I scroll down the <span class="arg">"{panel_name}"</span> panel<br/>
+              <span class="keyword">When</span> I click row actions for user <span class="arg">"{username}"</span><br/>
+              <span class="keyword">When</span> I click <span class="arg">"{action}"</span> from the action menu<br/>
+              <span class="keyword">Then</span> I click the <span class="arg">"{icon}"</span> icon
+            </div>
+            <div class="card">
+              <div class="card-title">Modals & Action Menus</div>
+              <p class="card-desc">
+                Handles nested modal dialogs, 3-dots table row menus, toast snackbar verifications, and inner container scrolling.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: HOW TO RUN -->
+    <section class="slide" data-slide="5">
+      <div class="slide-header">
+        <div class="slide-tag">Execution Guide</div>
+        <h2 class="slide-title">How to Run Automation Tests</h2>
+        <p class="slide-subtitle">Multiple ways to run: One-click Batch launcher, Python CLI, and Behave native</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab(this, 'tab-bat')">1. Double-Click Launcher</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-cli')">2. Python Runner CLI</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-native')">3. Direct Behave</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-setup')">4. First-Time Setup</button>
+        </div>
+
+        <div id="tab-bat" class="tab-pane active">
+          <div class="grid-2">
+            <div>
+              <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                The easiest way for QA team members and stakeholders. Simply double click <code>run_tests.bat</code> from Windows Explorer:
+              </p>
+              <div class="code-box">
+                <span class="comment">REM In Windows Explorer:</span><br/>
+                <span class="cmd">Double-click</span> run_tests.bat<br/><br/>
+                <span class="comment">Displays Interactive Menu:</span><br/>
+                [1] Run ALL feature files<br/>
+                [2] Run tests by TAG (e.g., @smoke)<br/>
+                [3] Browse and select a specific feature file<br/>
+                [4] Exit
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">What happens under the hood?</div>
+              <ul style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.4rem; list-style:none;">
+                <li class="list-item">
+                  <span class="list-bullet">✓</span>
+                  <span>Automatically detects Python installation on PATH or user directory</span>
+                </li>
+                <li class="list-item">
+                  <span class="list-bullet">✓</span>
+                  <span>Verifies ChromeDriver and required dependencies</span>
+                </li>
+                <li class="list-item">
+                  <span class="list-bullet">✓</span>
+                  <span>Prompts to open the generated HTML report immediately when done</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-cli" class="tab-pane">
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            <code>BehaveTestRunner.py</code> offers flexible command-line arguments for CI/CD or power users:
+          </p>
+          <div class="grid-2">
+            <div class="code-box">
+              <span class="comment"># 1. Interactive terminal menu</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py<br/><br/>
+              <span class="comment"># 2. Run all features sequentially</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py <span class="flag">--run-all</span><br/><br/>
+              <span class="comment"># 3. Run a specific feature file</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py <span class="flag">--feature</span> <span class="arg">features/Forms/Demo.feature</span><br/><br/>
+              <span class="comment"># 4. Filter execution by Gherkin tag</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py <span class="flag">--tag</span> <span class="arg">@smoke</span>
+            </div>
+            <div class="card">
+              <div class="card-title">Key Features of the Runner</div>
+              <p class="card-desc">
+                • Automatically injects <code>login.feature</code> before the selected feature.<br/>
+                • Pipes structured JSON into <code>generate_report.py</code>.<br/>
+                • Returns exit code <code>0</code> on pass and <code>1</code> on failure for CI/CD builds.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-native" class="tab-pane">
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+            You can also run directly with Behave CLI for custom flags and step debugging:
+          </p>
+          <div class="code-box">
+            <span class="comment"># Dry-run validation (checks step definitions without opening Chrome):</span><br/>
+            <span class="cmd">python</span> -m behave <span class="flag">--dry-run</span><br/><br/>
+            <span class="comment"># Run login + specific feature with live console output:</span><br/>
+            <span class="cmd">python</span> -m behave <span class="flag">--no-capture</span> features/login.feature features/Forms/Demo.feature
+          </div>
+        </div>
+
+        <div id="tab-setup" class="tab-pane">
+          <div class="grid-2">
+            <div>
+              <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                To prepare a brand new PC for testing, run <code>setup.bat</code>:
+              </p>
+              <div class="code-box">
+                <span class="cmd">setup.bat</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">What <code>setup.bat</code> checks:</div>
+              <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
+                1. Internet connection & Google Chrome existence<br/>
+                2. Python 3.10–3.15 installation (downloads if missing)<br/>
+                3. Upgrades pip & installs <code>selenium</code>, <code>behave</code>, <code>webdriver-manager</code>, <code>python-dotenv</code><br/>
+                4. Ensures required folders (<code>reports</code>, <code>screenshots</code>, <code>downloads</code>) exist
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: REPORTS -->
+    <section class="slide" data-slide="6">
+      <div class="slide-header">
+        <div class="slide-tag">Visual Diagnostics</div>
+        <h2 class="slide-title">Reports & Screenshot Diagnostics</h2>
+        <p class="slide-subtitle">Clear audit trails, execution timelines, and automatic failure captures</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon" style="color:#34d399; background:rgba(52, 211, 153, 0.15);">📄</div>
+              <div class="card-title">Interactive HTML Report</div>
+            </div>
+            <p class="card-desc">
+              Every execution generates a self-contained HTML file in <code>reports/</code> with total scenarios, steps passed/failed, duration metrics, and expandable scenario cards.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon" style="color:#f43f5e; background:rgba(244, 63, 94, 0.15);">📷</div>
+              <div class="card-title">Auto Failure Screenshots</div>
+            </div>
+            <p class="card-desc">
+              If an element is missing, a timeout occurs, or an assertion fails, Selenium automatically snaps a PNG screenshot to <code>screenshots/FAIL_{scenario}_{timestamp}.png</code>.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon" style="color:#a78bfa; background:rgba(167, 139, 250, 0.15);">📑</div>
+              <div class="card-title">Screenshot Index Map</div>
+            </div>
+            <p class="card-desc">
+              <code>screenshot_index.json</code> tracks the exact relationship between feature, scenario, and image paths, enabling the report generator to embed screenshot links right at the failure point.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="background:#0a0f1d; border-color:#1e293b; padding:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1e293b; padding-bottom:0.75rem;">
+            <div>
+              <span style="font-weight:700; font-size:0.95rem; color:#fff;">Report Preview: Forms / Demo.feature</span>
+              <span style="font-size:0.75rem; color:#64748b; margin-left:0.5rem;">Executed on 2026-09-21</span>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <span class="badge badge-green">2 Scenarios Passed</span>
+              <span class="badge badge-blue">14 Steps Completed</span>
+              <span class="badge badge-purple">Duration: 8.4s</span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:1rem;">
+            <div style="background:#111827; padding:0.75rem; border-radius:8px; border-left:3px solid #34d399;">
+              <div style="font-size:0.75rem; color:#94a3b8;">Scenario: Successful login and setup</div>
+              <div style="font-weight:700; color:#34d399; font-size:0.85rem; margin-top:0.2rem;">PASSED (4.2s)</div>
+            </div>
+            <div style="background:#111827; padding:0.75rem; border-radius:8px; border-left:3px solid #34d399;">
+              <div style="font-size:0.75rem; color:#94a3b8;">Scenario: Open User Management page</div>
+              <div style="font-weight:700; color:#34d399; font-size:0.85rem; margin-top:0.2rem;">PASSED (1.8s)</div>
+            </div>
+            <div style="background:#111827; padding:0.75rem; border-radius:8px; border-left:3px solid #34d399;">
+              <div style="font-size:0.75rem; color:#94a3b8;">Scenario: Filter status dropdown</div>
+              <div style="font-weight:700; color:#34d399; font-size:0.85rem; margin-top:0.2rem;">PASSED (2.4s)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: HEALTH CHECK -->
+    <section class="slide" data-slide="7">
+      <div class="slide-header">
+        <div class="slide-tag">Quality Assessment</div>
+        <h2 class="slide-title">Project Health Check: Findings & Fixes</h2>
+        <p class="slide-subtitle">Analysis of current workspace state, verified features, and resolution items</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="grid-2">
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div class="card" style="border-left: 4px solid #fbbf24;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge badge-amber">Feature Syntax Discrepancy</span>
+                <span style="font-size:0.75rem; color:#94a3b8;">features/Forms/</span>
+              </div>
+              <p class="card-desc">
+                <code>user_management.feature</code> had floating steps without a scenario heading. Resolved by referencing the clean <code>User_Management (2).feature</code>.
+              </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid #38bdf8;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge badge-blue">Searchable Dropdown Alias Added</span>
+                <span style="font-size:0.75rem; color:#94a3b8;">all_steps.py</span>
+              </div>
+              <p class="card-desc">
+                Added step decorator aliases for <code>searchable dropdown</code> to <code>select_dropdown</code> in <code>all_steps.py</code>, enabling <code>ticket_manager.feature</code> to run smoothly.
+              </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid #34d399;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="badge badge-green">Python 3.14+ Auto-Discovery</span>
+                <span style="font-size:0.75rem; color:#94a3b8;">BehaveTestRunner.py & BATs</span>
+              </div>
+              <p class="card-desc">
+                Updated <code>setup.bat</code>, <code>run_tests.bat</code>, and <code>BehaveTestRunner.py</code> to check <code>sys.executable</code> and Python 3.10 through 3.15.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="background:#0c1222;">
+            <div class="card-title" style="color:var(--accent-blue);">Resolved Quick Wins</div>
+            <div style="display:flex; flex-direction:column; gap:0.6rem; margin-top:0.5rem;">
+              <div class="list-item">
+                <span class="list-bullet">✓</span>
+                <div>
+                  <strong style="color:#fff;">Step Bindings Guidance:</strong>
+                  <div style="font-size:0.8rem;">Added complete 180+ step reference with live search and copy buttons in <code>ARTIFACTS_GUIDE.html</code> and <code>ARTIFACTS_GUIDE.md</code>.</div>
+                </div>
+              </div>
+
+              <div class="list-item">
+                <span class="list-bullet">✓</span>
+                <div>
+                  <strong style="color:#fff;">Missing Dependencies Added:</strong>
+                  <div style="font-size:0.8rem;">Included <code>python-dotenv</code>, <code>colorama</code>, and <code>setuptools</code> in <code>requirements.txt</code> and <code>setup.bat</code>.</div>
+                </div>
+              </div>
+
+              <div class="list-item">
+                <span class="list-bullet">✓</span>
+                <div>
+                  <strong style="color:#fff;">BAT Numbering & Drivers:</strong>
+                  <div style="font-size:0.8rem;">Fixed 7-step sequence in <code>setup.bat</code> and added driver verification.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: STRATEGIC RECOMMENDATIONS -->
+    <section class="slide" data-slide="8">
+      <div class="slide-header">
+        <div class="slide-tag">Future Roadmap</div>
+        <h2 class="slide-title">What Could We Add to Make This More Powerful?</h2>
+        <p class="slide-subtitle">High-impact upgrades to elevate this automation platform to enterprise grade</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🚀</div>
+              <div class="card-title">Headless Mode & CI/CD</div>
+            </div>
+            <p class="card-desc">
+              Add a <code>HEADLESS=true</code> flag in <code>config.env</code> to run tests silently in background pipelines (GitHub Actions, GitLab CI, Jenkins) on every pull request or nightly schedule.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🌐</div>
+              <div class="card-title">Multi-Browser Engine</div>
+            </div>
+            <p class="card-desc">
+              Extend <code>environment.py</code> to support <strong>Microsoft Edge</strong> and <strong>Mozilla Firefox</strong> via a simple <code>BROWSER=chrome|edge|firefox</code> setting for cross-browser parity checks.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📈</div>
+              <div class="card-title">Executive Metrics Dashboard</div>
+            </div>
+            <p class="card-desc">
+              Create a unified history dashboard that aggregates results across test runs to show pass-rate trends, test stability scores, and average scenario durations over time.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🛡️</div>
+              <div class="card-title">Self-Healing Selectors</div>
+            </div>
+            <p class="card-desc">
+              Implement hierarchical locator fallback (<code>data-testid</code> → <code>id</code> → <code>name</code> → <code>ARIA label</code> → <code>smart XPath</code>) so UI redesigns never break test execution unexpectedly.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">⚡</div>
+              <div class="card-title">Parallel Feature Execution</div>
+            </div>
+            <p class="card-desc">
+              Add multi-worker concurrent execution for independent feature files, reducing total regression execution time from 15 minutes down to under 3 minutes.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🔒</div>
+              <div class="card-title">Encrypted Secrets Vault</div>
+            </div>
+            <p class="card-desc">
+              Support environment variables or encrypted credential stores (e.g. Windows Credential Locker / Azure KeyVault) so passwords are never committed in plain text.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: QA WORKFLOW -->
+    <section class="slide" data-slide="9">
+      <div class="slide-header">
+        <div class="slide-tag">Conclusion</div>
+        <h2 class="slide-title">Summary & QA Team Workflow</h2>
+        <p class="slide-subtitle">Standard operating procedure for creating, testing, and maintaining automated tests</p>
+      </div>
+
+      <div class="slide-content">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title" style="color:#38bdf8;">Standard 3-Step QA Workflow</div>
+            <div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.4rem;">
+              <div class="list-item">
+                <span class="list-bullet" style="background:rgba(56, 189, 248, 0.2);">1</span>
+                <div>
+                  <strong style="color:#fff;">Write Feature in Gherkin:</strong>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">
+                    Create or update a <code>.feature</code> file inside <code>features/Forms/</code> using steps from <code>ARTIFACTS_GUIDE.html</code>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="list-item">
+                <span class="list-bullet" style="background:rgba(168, 85, 247, 0.2);">2</span>
+                <div>
+                  <strong style="color:#fff;">Validate Steps (Dry-Run):</strong>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">
+                    Run <code>python -m behave --dry-run</code> to ensure all steps match definitions in <code>all_steps.py</code>.
+                  </div>
+                </div>
+              </div>
+
+              <div class="list-item">
+                <span class="list-bullet" style="background:rgba(16, 185, 129, 0.2);">3</span>
+                <div>
+                  <strong style="color:#fff;">Execute & Review Report:</strong>
+                  <div style="font-size:0.8rem; color:var(--text-muted);">
+                    Run via <code>run_tests.bat</code>, review the auto-opened HTML report, and inspect any failure screenshots.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#34d399;">Quick Command Cheat Sheet</div>
+            <div class="code-box" style="margin-top:0.3rem;">
+              <span class="comment"># Run complete regression suite:</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py <span class="flag">--run-all</span><br/><br/>
+              <span class="comment"># Run specific smoke tests:</span><br/>
+              <span class="cmd">python</span> BehaveTestRunner.py <span class="flag">--tag</span> <span class="arg">@smoke</span><br/><br/>
+              <span class="comment"># Verify all steps without browser:</span><br/>
+              <span class="cmd">python</span> -m behave <span class="flag">--dry-run</span><br/><br/>
+              <span class="comment"># Guidance file with searchable steps:</span><br/>
+              <span class="keyword">start</span> ARTIFACTS_GUIDE.html
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="background:linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(99, 102, 241, 0.15)); border-color:rgba(56, 189, 248, 0.4); text-align:center; padding:1rem;">
+          <span style="font-size:0.95rem; font-weight:700; color:#fff;">Framework Ready for Enterprise Test Execution</span>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">
+            You can now present this interactive deck, execute test suites, and write new feature files referencing all documented step bindings.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="keyboard-hints">
+      <span>Navigation:</span>
+      <span class="kbd">←</span>
+      <span class="kbd">→</span>
+      <span style="margin-left:0.25rem;">or</span>
+      <span class="kbd">Space</span>
+      <span style="margin-left:0.5rem;">Index:</span>
+      <span class="kbd">M</span>
+      <span style="margin-left:0.5rem;">Fullscreen:</span>
+      <span class="kbd">F</span>
+    </div>
+
+    <div>
+      <span>AcSys ERP QA Automation Team • Confidential</span>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div id="jumpMenu" onclick="closeJumpMenu(event)">
+    <div class="jump-content" onclick="event.stopPropagation()">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem;">
+        <h3 style="font-size:1.1rem; color:#fff;">Slide Navigation Index</h3>
+        <button class="btn" onclick="closeJumpMenu()">✕</button>
+      </div>
+      <div id="jumpList"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const slideTitles = [
+      "AcSys ERP Automation Overview",
+      "Core Architecture & How It Works",
+      "Project Directory Structure",
+      "Step Bindings & Gherkin Reference",
+      "Execution Guide: How to Run",
+      "Reports & Failure Diagnostics",
+      "Health Check: Findings & Fixes",
+      "Strategic Recommendations & Roadmap",
+      "QA Team Workflow & Summary"
+    ];
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        const slideNum = index + 1;
+        if (slideNum === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      document.getElementById('slideCount').textContent = `${currentSlide} / ${totalSlides}`;
+      document.getElementById('progressBar').style.width = `${(currentSlide / totalSlides) * 100}%`;
+
+      document.getElementById('prevBtn').disabled = currentSlide === 1;
+      const nextBtn = document.getElementById('nextBtn');
+      if (currentSlide === totalSlides) {
+        nextBtn.innerHTML = `<span>Restart</span> <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`;
+      } else {
+        nextBtn.innerHTML = `<span>Next</span> <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>`;
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+      } else {
+        currentSlide = 1;
+      }
+      updateSlide();
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(num) {
+      if (num >= 1 && num <= totalSlides) {
+        currentSlide = num;
+        updateSlide();
+        closeJumpMenu();
+      }
+    }
+
+    function switchTab(btn, paneId) {
+      const parent = btn.closest('.slide-content');
+      parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      parent.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(paneId).classList.add('active');
+    }
+
+    function openJumpMenu() {
+      const list = document.getElementById('jumpList');
+      list.innerHTML = '';
+      slideTitles.forEach((title, i) => {
+        const item = document.createElement('div');
+        item.className = 'jump-item';
+        item.innerHTML = `
+          <span><strong style="color:var(--accent-blue); margin-right:0.5rem;">${i + 1}.</strong> ${title}</span>
+          ${i + 1 === currentSlide ? '<span class="badge badge-blue">Active</span>' : ''}
+        `;
+        item.onclick = () => goToSlide(i + 1);
+        list.appendChild(item);
+      });
+      document.getElementById('jumpMenu').classList.add('open');
+    }
+
+    function closeJumpMenu(e) {
+      document.getElementById('jumpMenu').classList.remove('open');
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Home') {
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        goToSlide(totalSlides);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullScreen();
+      } else if (e.key === 'm' || e.key === 'M') {
+        const modal = document.getElementById('jumpMenu');
+        if (modal.classList.contains('open')) closeJumpMenu();
+        else openJumpMenu();
+      } else if (e.key === 'Escape') {
+        closeJumpMenu();
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+</html>
